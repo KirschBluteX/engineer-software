@@ -1,0 +1,110 @@
+[
+  {
+    "id": "unclear-cache-behavior",
+    "prompt": "Add caching to search, but first help me decide freshness, invalidation, and what users should see when the cache is stale.",
+    "route": "shape-work",
+    "allowed_next": ["probe-choice", "deliver-change"]
+  },
+  {
+    "id": "migration-boundaries-open",
+    "prompt": "Plan moving sessions to a new store. Compatibility, cutover, and acceptable downtime are still undecided.",
+    "route": "shape-work",
+    "allowed_next": ["probe-choice", "deliver-change", "manage-work-items"]
+  },
+  {
+    "id": "intermittent-duplicate",
+    "prompt": "Checkout sometimes creates a duplicate order under load. Find the cause and fix it.",
+    "route": "trace-failure",
+    "allowed_next": ["deliver-change"]
+  },
+  {
+    "id": "unknown-test-regression",
+    "prompt": "This test suite began failing after yesterday's merge. We do not know which change or code path caused it.",
+    "route": "trace-failure",
+    "allowed_next": ["deliver-change"]
+  },
+  {
+    "id": "state-model-experiment",
+    "prompt": "Build a disposable experiment to compare two state-transition models before we choose one.",
+    "route": "probe-choice",
+    "allowed_next": ["shape-work", "deliver-change"]
+  },
+  {
+    "id": "interaction-variant-probe",
+    "prompt": "Make a throwaway page with three navigation variants so we can learn which interaction is understandable.",
+    "route": "probe-choice",
+    "allowed_next": ["shape-work", "deliver-change"]
+  },
+  {
+    "id": "closed-feature",
+    "prompt": "Add the documented --json flag to the existing status command and verify the specified output contract.",
+    "route": "deliver-change",
+    "allowed_next": []
+  },
+  {
+    "id": "known-cause-fix",
+    "prompt": "The off-by-one is confirmed in the pagination end-index calculation. Apply the narrow fix and add regression evidence.",
+    "route": "deliver-change",
+    "allowed_next": []
+  },
+  {
+    "id": "behavior-preserving-refactor",
+    "prompt": "Refactor the accepted parser implementation without changing its public behavior, then prove compatibility.",
+    "route": "deliver-change",
+    "allowed_next": ["inspect-structure"]
+  },
+  {
+    "id": "duplicate-policy-audit",
+    "prompt": "Audit this repository for duplicated authorization policy and competing sources of truth. Report evidence before proposing changes.",
+    "route": "inspect-structure",
+    "allowed_next": ["shape-work", "deliver-change"]
+  },
+  {
+    "id": "redundant-serialization",
+    "prompt": "Determine whether these three serializer layers are intentionally distinct or redundant architecture.",
+    "route": "inspect-structure",
+    "allowed_next": ["shape-work", "deliver-change"]
+  },
+  {
+    "id": "local-prd",
+    "prompt": "Turn the agreed feature discussion into a local PRD draft with acceptance criteria. Do not publish anything remotely.",
+    "route": "manage-work-items",
+    "allowed_next": []
+  },
+  {
+    "id": "local-task-slices",
+    "prompt": "Break this specification into independently verifiable local task drafts, show their dependencies, then implement the first closed slice.",
+    "route": "manage-work-items",
+    "allowed_next": ["deliver-change"]
+  },
+  {
+    "id": "remote-request-stays-draft",
+    "prompt": "Draft the issue set for this feature so I can review it before anyone posts it to a remote tracker.",
+    "route": "manage-work-items",
+    "allowed_next": []
+  },
+  {
+    "id": "explain-code",
+    "prompt": "Explain what this function does and why it returns null here.",
+    "route": "bypass",
+    "allowed_next": []
+  },
+  {
+    "id": "mechanical-rename",
+    "prompt": "Rename the misspelled documentation file and update its two known links.",
+    "route": "bypass",
+    "allowed_next": []
+  },
+  {
+    "id": "asset-curation",
+    "prompt": "Choose six existing screenshots, copy them into the requested folder, verify the copies, then commit and push as already authorized.",
+    "route": "bypass",
+    "allowed_next": []
+  },
+  {
+    "id": "format-only",
+    "prompt": "Format this JSON file with the repository's existing formatter and make no semantic changes.",
+    "route": "bypass",
+    "allowed_next": []
+  }
+]

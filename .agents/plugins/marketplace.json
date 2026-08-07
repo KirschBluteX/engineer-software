@@ -1,0 +1,20 @@
+{
+  "name": "engineer-software",
+  "interface": {
+    "displayName": "Engineer Software"
+  },
+  "plugins": [
+    {
+      "name": "engineer-software",
+      "source": {
+        "source": "local",
+        "path": "./plugins/engineer-software"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

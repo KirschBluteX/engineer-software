@@ -1,0 +1,34 @@
+{
+  "name": "engineer-software",
+  "version": "0.1.0+codex.20260807134603",
+  "description": "A focused, evidence-driven workflow for software engineering tasks.",
+  "author": {
+    "name": "KirschBluteX",
+    "url": "https://github.com/KirschBluteX"
+  },
+  "homepage": "https://github.com/KirschBluteX/engineer-software",
+  "repository": "https://github.com/KirschBluteX/engineer-software",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "software-engineering",
+    "debugging",
+    "testing",
+    "architecture"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Engineer Software",
+    "shortDescription": "Focused software delivery with evidence",
+    "longDescription": "Routes software work into one focused module at a time for shaping, diagnosis, disposable probes, implementation, structural inspection, or local work-item drafting.",
+    "developerName": "KirschBluteX",
+    "category": "Productivity",
+    "capabilities": [],
+    "websiteURL": "https://github.com/KirschBluteX/engineer-software",
+    "defaultPrompt": [
+      "Use Engineer Software to implement this change with focused evidence.",
+      "Use Engineer Software to diagnose this failure before editing.",
+      "Use Engineer Software to inspect this design for redundant structure."
+    ]
+  }
+}

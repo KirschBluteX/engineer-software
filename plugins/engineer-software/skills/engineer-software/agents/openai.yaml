@@ -1,0 +1,7 @@
+interface:
+  display_name: "Engineer Software"
+  short_description: "Route software work with focused evidence"
+  default_prompt: "Use $engineer-software to take this software task through the smallest relevant workflow and verify the result."
+
+policy:
+  allow_implicit_invocation: true
