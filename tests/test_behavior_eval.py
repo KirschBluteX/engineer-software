@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from argparse import Namespace
 from pathlib import Path
 
 
@@ -13,18 +14,23 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from prepare_behavior_worktrees import FIXTURE_ROOT  # noqa: E402
 from run_behavior_eval import (  # noqa: E402
+    DEFAULT_TIMEOUT_SECONDS,
     SKILL_PATH,
     build_command,
     classify_completion,
+    evaluation_settings,
     git_evidence,
     load_cases,
     prompt_for,
+    settings_fingerprint,
     workspace_errors,
 )
 from summarize_behavior_eval import METRICS, collect_scores  # noqa: E402
 
 
 class BehaviorEvaluationContractTests(unittest.TestCase):
+    FINGERPRINT = "a" * 64
+
     def test_cases_are_unique_and_cover_all_primary_routes(self) -> None:
         cases = load_cases()
         self.assertEqual(len(cases), len({case["id"] for case in cases}))
@@ -49,6 +55,8 @@ class BehaviorEvaluationContractTests(unittest.TestCase):
         self.assertIn("Use $engineer-software", treatment)
         self.assertNotIn("Use $engineer-software", baseline)
         self.assertIn("Do not load or use Engineer Software", baseline)
+        self.assertIn("headless evaluation", treatment)
+        self.assertIn("headless evaluation", baseline)
 
     def test_case_file_is_plain_json_with_source_provenance(self) -> None:
         value = json.loads((ROOT / "evals" / "behavior-cases.json").read_text(encoding="utf-8"))
@@ -219,6 +227,19 @@ class BehaviorEvaluationContractTests(unittest.TestCase):
         self.assertEqual("no_final_response", classify_completion(0, ""))
         self.assertEqual("command_failed", classify_completion(1, "provider error"))
 
+    def test_experiment_fingerprint_covers_comparison_settings(self) -> None:
+        settings = evaluation_settings(
+            Namespace(model=None, timeout=3600, use_user_config=True)
+        )
+        self.assertEqual(3600, DEFAULT_TIMEOUT_SECONDS)
+        self.assertEqual(3600, settings["timeout_seconds"])
+        self.assertTrue(settings["use_user_config"])
+        self.assertEqual(["plugins", "skill_search"], settings["disabled_features"])
+        fingerprint = settings_fingerprint(settings)
+        self.assertEqual(64, len(fingerprint))
+        changed = {**settings, "timeout_seconds": 900}
+        self.assertNotEqual(fingerprint, settings_fingerprint(changed))
+
     def test_score_collector_rejects_out_of_range_and_incomplete_scores(self) -> None:
         scores = {metric: 2 for metric in METRICS}
         scores["evidence"] = 5
@@ -229,9 +250,14 @@ class BehaviorEvaluationContractTests(unittest.TestCase):
                     "condition": "baseline",
                     "completion_state": "completed",
                     "exit_code": 0,
+                    "experiment_fingerprint": self.FINGERPRINT,
                     "scores": scores,
                 },
-                {"id": "case", "condition": "treatment"},
+                {
+                    "id": "case",
+                    "condition": "treatment",
+                    "experiment_fingerprint": self.FINGERPRINT,
+                },
             ]
         )
         self.assertEqual({}, paired)
@@ -246,6 +272,7 @@ class BehaviorEvaluationContractTests(unittest.TestCase):
                 "condition": "baseline",
                 "completion_state": "completed",
                 "exit_code": 0,
+                "experiment_fingerprint": self.FINGERPRINT,
                 "scores": scores,
             },
             {
@@ -253,9 +280,14 @@ class BehaviorEvaluationContractTests(unittest.TestCase):
                 "condition": "treatment",
                 "completion_state": "completed",
                 "exit_code": 0,
+                "experiment_fingerprint": self.FINGERPRINT,
                 "scores": {metric: 3 for metric in METRICS},
             },
-            {"id": "raw-only", "condition": "baseline"},
+            {
+                "id": "raw-only",
+                "condition": "baseline",
+                "experiment_fingerprint": self.FINGERPRINT,
+            },
         ]
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "scores.json"
@@ -276,8 +308,16 @@ class BehaviorEvaluationContractTests(unittest.TestCase):
     def test_score_collector_rejects_duplicate_unscored_rows(self) -> None:
         paired, errors, unscored = collect_scores(
             [
-                {"id": "case", "condition": "baseline"},
-                {"id": "case", "condition": "baseline"},
+                {
+                    "id": "case",
+                    "condition": "baseline",
+                    "experiment_fingerprint": self.FINGERPRINT,
+                },
+                {
+                    "id": "case",
+                    "condition": "baseline",
+                    "experiment_fingerprint": self.FINGERPRINT,
+                },
             ]
         )
         self.assertEqual({}, paired)
@@ -293,6 +333,7 @@ class BehaviorEvaluationContractTests(unittest.TestCase):
                     "condition": "baseline",
                     "completion_state": "command_failed",
                     "exit_code": 1,
+                    "experiment_fingerprint": self.FINGERPRINT,
                     "scores": scores,
                 }
             ]
@@ -300,6 +341,77 @@ class BehaviorEvaluationContractTests(unittest.TestCase):
         self.assertEqual({}, paired)
         self.assertEqual({"baseline": 0, "treatment": 0}, unscored)
         self.assertTrue(any("cannot be scored" in error for error in errors))
+
+    def test_score_collector_rejects_mismatched_legacy_fingerprints(self) -> None:
+        scores = {metric: 2 for metric in METRICS}
+        rows = [
+            {
+                "id": "case",
+                "condition": condition,
+                "completion_state": "completed",
+                "exit_code": 0,
+                "experiment_fingerprint": fingerprint,
+                "scores": scores,
+            }
+            for condition, fingerprint in (("baseline", "a" * 64), ("treatment", "b" * 64))
+        ]
+        paired, errors, _ = collect_scores(rows)
+        self.assertIn("case", paired)
+        self.assertTrue(any("settings differ" in error for error in errors))
+
+    def test_score_collector_rejects_mismatched_semantic_settings(self) -> None:
+        scores = {metric: 2 for metric in METRICS}
+        rows = []
+        for condition, skill_hash in (("baseline", "c" * 64), ("treatment", "d" * 64)):
+            rows.append(
+                {
+                    "id": "case",
+                    "condition": condition,
+                    "completion_state": "completed",
+                    "exit_code": 0,
+                    "experiment_fingerprint": "a" * 64,
+                    "experiment_settings": {
+                        "requested_model": None,
+                        "use_user_config": True,
+                        "disabled_features": ["plugins", "skill_search"],
+                        "skill_sha256": skill_hash,
+                    },
+                    "scores": scores,
+                }
+            )
+        _, errors, _ = collect_scores(rows)
+        self.assertTrue(any("settings differ" in error for error in errors))
+
+    def test_score_collector_allows_different_timeout_guards(self) -> None:
+        scores = {metric: 2 for metric in METRICS}
+        common = {
+            "requested_model": None,
+            "use_user_config": True,
+            "disabled_features": ["plugins", "skill_search"],
+            "skill_sha256": "c" * 64,
+        }
+        rows = [
+            {
+                "id": "case",
+                "condition": condition,
+                "completion_state": "completed",
+                "exit_code": 0,
+                "experiment_fingerprint": fingerprint,
+                "experiment_settings": {
+                    **common,
+                    "timeout_seconds": timeout,
+                    "runner_sha256": runner,
+                },
+                "scores": scores,
+            }
+            for condition, fingerprint, timeout, runner in (
+                ("baseline", "a" * 64, 900, "d" * 64),
+                ("treatment", "b" * 64, 3600, "e" * 64),
+            )
+        ]
+        paired, errors, _ = collect_scores(rows)
+        self.assertEqual([], errors)
+        self.assertEqual({"baseline", "treatment"}, set(paired["case"]))
 
 
 if __name__ == "__main__":

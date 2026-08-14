@@ -53,8 +53,9 @@ python scripts/run_behavior_eval.py --condition baseline --workspace-root C:\pat
 python scripts/run_behavior_eval.py --condition treatment --workspace-root C:\path\to\worktrees --live --output evals/runs/behavior-treatment.json
 ```
 
-The default per-case timeout is 900 seconds because realistic engineering tasks can exceed a short
-smoke-test window. Use the same timeout for both conditions and record any override.
+The default per-case timeout is 3600 seconds because realistic engineering tasks can exceed a short
+smoke-test window. Use the same guard when practical and record any override; the guard is audit
+metadata rather than a semantic pairing key.
 
 Both conditions disable optional plugins and skill search so user configuration cannot add a second
 treatment difference. The treatment prompt explicitly loads the repository's canonical `SKILL.md`;
@@ -62,6 +63,10 @@ the baseline prompt does not. Both runs record raw JSONL events, the final respo
 timestamps, the tracked patch, and hashed bounded content for untracked files. `completion_state`
 separates a completed response, timeout, missing final response, and command failure; an
 authentication or CLI failure is environment evidence, not a workflow score.
+Each row also carries a fingerprint over the requested model, timeout, user-config policy, disabled
+features, canonical skill, and runner. Pairing compares the model request, user-config policy,
+disabled features, and canonical skill; timeout and runner hashes remain recorded as audit metadata
+but are not semantic pairing keys.
 The runner ignores user configuration by default. If the selected model depends on a custom
 provider in the active Codex config, add `--use-user-config` to both conditions and record that
 configuration as part of the experiment; optional plugins remain disabled in both conditions.

@@ -24,7 +24,10 @@ from run_routing_eval import resolve_codex_command
 ROOT = Path(__file__).resolve().parents[1]
 CASES_PATH = ROOT / "evals" / "behavior-cases.json"
 SKILL_PATH = ROOT / "plugins" / "engineer-software" / "skills" / "engineer-software" / "SKILL.md"
+RUNNER_PATH = Path(__file__).resolve()
 MAX_UNTRACKED_BYTES = 64 * 1024
+DISABLED_FEATURES = ("plugins", "skill_search")
+DEFAULT_TIMEOUT_SECONDS = 3600
 
 
 def load_cases() -> list[dict[str, Any]]:
@@ -49,7 +52,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--case-id", action="append", default=[])
     parser.add_argument("--codex", default="codex")
     parser.add_argument("--model")
-    parser.add_argument("--timeout", type=int, default=900)
+    parser.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT_SECONDS)
     parser.add_argument("--output", type=Path)
     parser.add_argument(
         "--use-user-config",
@@ -81,6 +84,8 @@ def prompt_for(case: dict[str, Any], condition: str) -> str:
     return f"""You are working in an isolated repository worktree.
 {condition_text}
 Do not commit, push, publish, or touch paths outside the worktree. Preserve unrelated user work.
+This is a headless evaluation. Do not call interactive user-input tools; put any blocking questions
+or approval request in the final response instead.
 At the end, give a concise user-facing response with changed paths, exact verification evidence,
 blockers, and remaining uncertainty. Do not claim a check passed unless you ran it.
 
@@ -114,7 +119,8 @@ def build_command(
     ]
     if ignore_user_config:
         command.insert(command.index("exec") + 2, "--ignore-user-config")
-    command.extend(["--disable", "plugins", "--disable", "skill_search"])
+    for feature in DISABLED_FEATURES:
+        command.extend(["--disable", feature])
     if model:
         command.extend(["--model", model])
     command.append(prompt)
@@ -221,7 +227,28 @@ def classify_completion(exit_code: int, final_response: str) -> str:
     return "completed"
 
 
-def run_case(case: dict[str, Any], args: argparse.Namespace, codex: list[str]) -> dict[str, Any]:
+def evaluation_settings(args: argparse.Namespace) -> dict[str, Any]:
+    return {
+        "requested_model": args.model,
+        "timeout_seconds": args.timeout,
+        "use_user_config": args.use_user_config,
+        "disabled_features": list(DISABLED_FEATURES),
+        "skill_sha256": hashlib.sha256(SKILL_PATH.read_bytes()).hexdigest(),
+        "runner_sha256": hashlib.sha256(RUNNER_PATH.read_bytes()).hexdigest(),
+    }
+
+
+def settings_fingerprint(settings: dict[str, Any]) -> str:
+    serialized = json.dumps(settings, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+    return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
+
+
+def run_case(
+    case: dict[str, Any],
+    args: argparse.Namespace,
+    codex: list[str],
+    settings: dict[str, Any],
+) -> dict[str, Any]:
     workspace = args.workspace_root / f"{case['id']}--{args.condition}"
     if not workspace.is_dir():
         raise FileNotFoundError(f"missing prepared worktree: {workspace}")
@@ -254,6 +281,8 @@ def run_case(case: dict[str, Any], args: argparse.Namespace, codex: list[str]) -
             "route_target": case["route"],
             "source": case["source"],
             "source_url": case["source_url"],
+            "experiment_settings": settings,
+            "experiment_fingerprint": settings_fingerprint(settings),
             "workspace": str(workspace),
             "started_at": started.isoformat(),
             "finished_at": finished.isoformat(),
@@ -292,12 +321,14 @@ def main() -> int:
     except FileNotFoundError as exc:
         print(str(exc), file=sys.stderr)
         return 2
+    settings = evaluation_settings(args)
+    fingerprint = settings_fingerprint(settings)
     results: list[dict[str, Any]] = []
     for index, case in enumerate(cases, start=1):
         print(f"[{index}/{len(cases)}] {case['id']}", flush=True)
         case_started = datetime.now(timezone.utc)
         try:
-            results.append(run_case(case, args, codex))
+            results.append(run_case(case, args, codex, settings))
         except subprocess.TimeoutExpired as exc:
             case_finished = datetime.now(timezone.utc)
             results.append(
@@ -307,6 +338,8 @@ def main() -> int:
                     "route_target": case["route"],
                     "source": case["source"],
                     "source_url": case["source_url"],
+                    "experiment_settings": settings,
+                    "experiment_fingerprint": fingerprint,
                     "workspace": str(args.workspace_root / f"{case['id']}--{args.condition}"),
                     "started_at": case_started.isoformat(),
                     "finished_at": case_finished.isoformat(),
@@ -321,6 +354,8 @@ def main() -> int:
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "runner": "codex exec --ephemeral --json",
         "condition": args.condition,
+        "experiment_settings": settings,
+        "experiment_fingerprint": fingerprint,
         "results": results,
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)

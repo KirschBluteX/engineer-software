@@ -15,6 +15,12 @@ from typing import Any
 
 METRICS = ("outcome", "evidence", "scope", "verification", "friction")
 CONDITIONS = frozenset(("baseline", "treatment"))
+COMPARISON_SETTING_KEYS = (
+    "requested_model",
+    "use_user_config",
+    "disabled_features",
+    "skill_sha256",
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -40,6 +46,7 @@ def collect_scores(
     errors: list[str] = []
     unscored = {condition: 0 for condition in CONDITIONS}
     seen_rows: set[tuple[str, str]] = set()
+    comparison_settings: dict[str, dict[str, str]] = defaultdict(dict)
     for index, row in enumerate(rows):
         label = f"results[{index}]"
         if not isinstance(row, dict):
@@ -58,6 +65,27 @@ def collect_scores(
             errors.append(f"duplicate score row for {case_id!r} / {condition}")
             continue
         seen_rows.add(row_key)
+        fingerprint = row.get("experiment_fingerprint")
+        if not isinstance(fingerprint, str) or len(fingerprint) != 64:
+            errors.append(f"{label}.experiment_fingerprint must be a SHA-256 string")
+            continue
+        settings = row.get("experiment_settings")
+        if settings is None:
+            comparison_settings[case_id][condition] = fingerprint
+        elif not isinstance(settings, dict):
+            errors.append(f"{label}.experiment_settings must be an object")
+            continue
+        else:
+            missing_settings = set(COMPARISON_SETTING_KEYS) - set(settings)
+            if missing_settings:
+                errors.append(
+                    f"{label}.experiment_settings is missing comparison keys: {sorted(missing_settings)}"
+                )
+                continue
+            comparable = {key: settings[key] for key in COMPARISON_SETTING_KEYS}
+            comparison_settings[case_id][condition] = json.dumps(
+                comparable, sort_keys=True, separators=(",", ":")
+            )
         scores = row.get("scores")
         if scores is None:
             unscored[condition] += 1
@@ -90,6 +118,9 @@ def collect_scores(
         if len(normalized) != len(METRICS) or missing or extra:
             continue
         paired[case_id][condition] = normalized
+    for case_id, pair in comparison_settings.items():
+        if CONDITIONS <= set(pair) and len(set(pair.values())) != 1:
+            errors.append(f"experiment settings differ for paired case {case_id!r}")
     return paired, errors, unscored
 
 
