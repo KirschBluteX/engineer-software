@@ -134,6 +134,8 @@ python scripts/run_routing_eval.py --live --public-submission `
 
 The Harness projection and the Codex runner use the same case definitions; the generated projection
 does not introduce a second hand-maintained routing implementation.
+For matched task-level baseline/treatment runs against source-attributed local fixtures, see the
+[behavior A/B guide](evals/README.md#task-level-behavior-ab).
 
 ## Validation
 

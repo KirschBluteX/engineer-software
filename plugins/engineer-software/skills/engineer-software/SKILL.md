@@ -26,6 +26,9 @@ alternative starting modes, not phases that every task must traverse.
    blocker when another pass would only repeat questions, probes, or patches.
 5. Bind completion claims to fresh evidence from the final relevant state. Label manual, missing,
    flaky, or environment-dependent evidence instead of calling it a pass.
+6. Treat invented numeric policies, service levels, or compatibility promises as hypotheses, not
+   recommendations. Tie a proposed default to repository or user evidence, or leave it explicitly
+   unresolved for the user.
 
 ## Bypass
 

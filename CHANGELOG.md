@@ -4,6 +4,13 @@ All notable changes to Engineer Software are documented here.
 
 ## [Unreleased]
 
+- Added a source-attributed, paired task-level behavior pilot with isolated fixtures, raw execution
+  evidence, anchored score validation, and descriptive baseline/treatment statistics.
+- Prevented shaping guidance from inventing unsupported numeric policy, service-level, or
+  compatibility defaults after the first paired forward test exposed that failure mode.
+- Removed a duplicate runtime-labelled routing assertion; canonical case validation and projection
+  identity now provide separate, non-tautological evidence.
+
 ## [0.1.1] - 2026-08-14
 
 - Reframed the project as a runtime-neutral workflow with Codex and DeepSeek Harness entry points.

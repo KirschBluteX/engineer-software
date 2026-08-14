@@ -49,7 +49,7 @@ result as current.
 | Canonical workflow | `plugins/engineer-software/skills/engineer-software/` | same source projected to `.dsh/skills/engineer-software/` | byte-for-byte sync test | verified locally |
 | Skill loader | Codex plugin manifest and marketplace | project `.dsh/skills/<name>/SKILL.md` | official docs + static probe + 0.1.0-rc.6 loader smoke | verified locally for that version; Harness preview |
 | Relative references | `references/*.md` in plugin skill | copied generated `references/*.md` | projection check | verified locally |
-| Routing fixtures | `evals/routing-cases.json` and Codex runner | shared cases checked against the generated skill tree | dual-tree case validation | static only |
+| Routing fixtures | `evals/routing-cases.json` and Codex runner | same cases through the byte-identical generated skill tree | canonical case validation + projection identity | shared contract verified |
 | Install channel | Codex marketplace/plugin commands | project checkout or generated user skill root | commands below | Harness contract may change |
 
 ## Install, upgrade, and remove

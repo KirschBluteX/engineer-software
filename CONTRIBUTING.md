@@ -24,8 +24,8 @@ python scripts/validate_harness.py --check
 ```
 
 The official Harness integration is project-local `.dsh/skills/<name>/SKILL.md` plus relative
-resources. Harness is a developer preview; do not invent a remote manifest, claim live API coverage,
-or describe the project as an official DeepSeek plugin.
+resources. Harness is a developer preview; do not invent a remote manifest or describe the project
+as an official DeepSeek plugin.
 
 ## Required checks
 

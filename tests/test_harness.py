@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import struct
 import subprocess
 import sys
@@ -10,13 +9,9 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CANONICAL = ROOT / "plugins" / "engineer-software" / "skills" / "engineer-software"
 PROJECTION = ROOT / ".dsh" / "skills" / "engineer-software"
-CASES = ROOT / "evals" / "routing-cases.json"
-
 sys.path.insert(0, str(ROOT / "scripts"))
 from sync_harness_skill import compare_projection, write_projection  # noqa: E402
-from validate_evals import validate_cases  # noqa: E402
 from validate_harness import OFFICIAL_SOURCES, static_errors  # noqa: E402
 
 
@@ -44,13 +39,6 @@ class HarnessContractTests(unittest.TestCase):
             rogue.write_text("---\nname: rogue\ndescription: rogue\n---\n", encoding="utf-8")
             errors = static_errors(PROJECTION)
         self.assertTrue(any("unexpected non-canonical" in error for error in errors))
-
-    def test_shared_routing_fixtures_validate_against_both_skill_trees(self) -> None:
-        cases = json.loads(CASES.read_text(encoding="utf-8"))
-        for runtime, skill_dir in (("codex", CANONICAL), ("deepseek-harness", PROJECTION)):
-            with self.subTest(runtime=runtime):
-                errors = validate_cases(cases, skill_dir / "references")
-                self.assertEqual([], errors, "\n".join(errors))
 
     def test_official_contract_sources_are_documented(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")

@@ -178,7 +178,7 @@ Remove-Item -LiteralPath .dsh/skills/engineer-software -Recurse
 | Harness 版本稳定性 | **developer preview**，可能出现兼容性破坏变更 |
 | Harness loader smoke | 官方 `0.1.0-rc.6` 已在项目 workspace 中发现并加载技能 |
 
-完整矩阵、官方来源、升级故障处理和用户级目录说明见 [docs/compatibility.md](docs/compatibility.md)。静态检查不需要 API key；真实模型会话仍由用户自己的 Harness 配置和权限决定。
+完整矩阵、官方来源、升级故障处理和用户级目录说明见 [docs/compatibility.md](docs/compatibility.md)。官方 loader smoke 不需要 API key。
 
 ## 验证
 

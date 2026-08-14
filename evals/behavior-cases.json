@@ -1,0 +1,51 @@
+[
+  {
+    "id": "shape-cache-contract",
+    "route": "shape-work",
+    "source": "project routing case based on a common product request",
+    "source_url": "https://github.com/KirschBluteX/engineer-software/blob/main/evals/routing-cases.json",
+    "prompt": "Add caching to search, but first help me decide freshness, invalidation, and what users should see when cached data is stale. Do not implement until those user-visible choices and acceptance checks are closed."
+  },
+  {
+    "id": "trace-offline-thread",
+    "route": "trace-failure",
+    "source": "controlled reduction of SWE-Lancer Diamond 32236_652",
+    "source_url": "https://github.com/openai/frontier-evals/tree/main/project/swelancer/issues/32236_652",
+    "prompt": "Users can create a thread for a message they deleted while offline. Reproduce the reported behavior in this repository, find the cause, fix it, and verify that normal online deletion and ordinary thread creation still work."
+  },
+  {
+    "id": "probe-markdown-choice",
+    "route": "probe-choice",
+    "source": "controlled reduction of SWE-Lancer Diamond 15193-manager-0",
+    "source_url": "https://github.com/openai/frontier-evals/tree/main/project/swelancer/issues/15193",
+    "prompt": "A heading immediately followed by a fenced code block briefly renders the code as bold. We are undecided between tightening the current regex and switching this edge case to the tokenized renderer. Run one bounded disposable experiment against the supplied implementations, recommend one option from observed behavior, remove any temporary artifact, and do not change production code yet."
+  },
+  {
+    "id": "deliver-profile-error",
+    "route": "deliver-change",
+    "source": "controlled reduction of SWE-Lancer Diamond 28030_832",
+    "source_url": "https://github.com/openai/frontier-evals/tree/main/project/swelancer/issues/28030_832",
+    "prompt": "The cause is confirmed: profile upload errors use PROFILE_ERROR_STYLE while all other selectable errors use ERROR_TEXT_STYLE. Change profile_error_style() to return the shared ERROR_TEXT_STYLE, add a regression test that protects selectable text and the text cursor, and run the full test suite. Do not change other components."
+  },
+  {
+    "id": "inspect-email-validation",
+    "route": "inspect-structure",
+    "source": "controlled reduction of SWE-Lancer Diamond 17387_1",
+    "source_url": "https://github.com/openai/frontier-evals/tree/main/project/swelancer/issues/17387_1",
+    "prompt": "Audit this repository for the reported inconsistent email validation across login, chat, and contact methods. This is a read-only architecture review: identify any duplicated policy, its current owners and callers, the observable maintenance or correctness cost, and the smallest credible consolidation boundary. Do not edit files."
+  },
+  {
+    "id": "manage-offline-work",
+    "route": "manage-work-items",
+    "source": "planning follow-up derived from SWE-Lancer Diamond 32236_652",
+    "source_url": "https://github.com/openai/frontier-evals/tree/main/project/swelancer/issues/32236_652",
+    "prompt": "Create local drafts at docs/offline-thread-prd.md and docs/offline-thread-tasks.md for preventing threads on messages deleted offline. Use the repository context, keep requirements observable, include non-goals and acceptance checks, and split implementation into independently verifiable vertical tasks. Do not publish anything remotely or change production code."
+  },
+  {
+    "id": "bypass-mechanical-rename",
+    "route": "bypass",
+    "source": "negative control for workflow overhead",
+    "source_url": "https://github.com/KirschBluteX/engineer-software/blob/main/evals/routing-cases.json",
+    "prompt": "Rename docs/old-name.md to docs/new-name.md and update the one README link to it. Make no other changes."
+  }
+]

@@ -7,8 +7,6 @@ and evidence that can be reproduced without a model key.
 
 - Track the official DeepSeek Harness skill-loader contract across preview releases and update the
   projection probe when the upstream contract changes.
-- Add a live Harness routing evaluator only when the official CLI exposes a stable, scriptable,
-  keyless or explicitly gated interface that can be verified locally.
 - Keep Codex marketplace preflight and the shared routing fixture suite green while refining module
   wording from observed disagreements.
 
