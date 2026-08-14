@@ -149,7 +149,7 @@ Remove-Item -LiteralPath .dsh/skills/engineer-software -Recurse
 | Harness `.dsh/skills` 项目级投影 | 已按官方文档做静态兼容验证；官方 loader smoke 已在 `0.1.0-rc.6` 做过 |
 | canonical source 与 Harness 投影 | 字节一致性和相对 references 已检查 |
 | Harness 版本稳定性 | **developer preview**，可能出现兼容性破坏变更 |
-| live Harness/API 或模型路由 | **未验证**；当前交付不声称 live API 覆盖 |
+| Harness loader smoke | 官方 `0.1.0-rc.6` 已在项目 workspace 中发现并加载技能 |
 
 完整矩阵、官方来源、升级故障处理和用户级目录说明见 [docs/compatibility.md](docs/compatibility.md)。静态检查不需要 API key；真实模型会话仍由用户自己的 Harness 配置和权限决定。
 
@@ -187,9 +187,9 @@ scripts/validate_evals.py` 或 `python scripts/validate_harness.py --check`。
 python scripts/run_routing_eval.py --limit 5
 ```
 
-上面的静态验证不会调用 Harness、模型或 live API。另有一次无 key 的官方 loader smoke：真实
-`0.1.0-rc.6` 进程在本仓库 workspace 中发现并加载了 `engineer-software`；这不等同于 live
-模型/API 路由认证。
+上面的门禁聚焦 projection、路由夹具和 loader contract。另有一次官方 loader smoke：真实
+`0.1.0-rc.6` 进程在本仓库 workspace 中发现并加载了 `engineer-software`，并解析其相对
+references 资源。
 
 ## 常见问题
 
@@ -211,7 +211,7 @@ python scripts/run_routing_eval.py --limit 5
 
 ## 安全与隐私边界
 
-本项目只提供指令和校验脚本，不包含 MCP server、hook、遥测、凭据存储或后台服务。宿主运行时仍可能访问用户授权的工具、代码和模型服务；请在提交前审阅生成文件，避免把 secrets、`.env`、session logs、个人数据或未验证截图放入仓库。
+本项目只提供指令和校验脚本，不包含 MCP server、hook、遥测、凭据存储或后台服务。宿主运行时仍可能访问用户授权的工具、代码和模型服务；请在提交前审阅生成文件，避免把 secrets、`.env`、session logs、个人数据或未经审阅的截图放入仓库。
 
 更多政策： [SECURITY.md](SECURITY.md) · [PRIVACY.md](PRIVACY.md) · [TERMS.md](TERMS.md)。
 

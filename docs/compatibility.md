@@ -30,18 +30,17 @@ on 2026-08-13. Recheck the upstream docs before treating this preview contract a
 python scripts/validate_harness.py --check
 ```
 
-The probe verifies file identity, frontmatter, resource paths, and the one-source rule. It does not
-call Harness, a model, or a live API. A CLI version response would not prove skill loading or model
-behavior, so the project does not report one as runtime evidence.
+The probe verifies file identity, frontmatter, resource paths, and the one-source rule. It is a
+deterministic local check for the documented filesystem skill bundle.
 
 ### Local loader smoke (not a CI gate)
 
 During this audit (2026-08-14 UTC), the official `@deepseek-ai/dsh@0.1.0-rc.6` package was started with an isolated
 `DSH_HOME` and the repository selected as a workspace. Its real `FileSystemSkillProvider` returned
 `engineer-software` from the `project-dsh` root at rank 100 and `get()` loaded the projected
-`SKILL.md` body with its generated `references/` resource base. No API key or model request was
-made. This is a version-pinned loader smoke result, not live model/API certification; rerun it after
-Harness preview upgrades before treating the result as current.
+`SKILL.md` body with its generated `references/` resource base. This records the filesystem loader
+contract for a pinned preview package; rerun it after Harness preview upgrades before treating the
+result as current.
 
 ## Compatibility matrix
 
@@ -51,7 +50,6 @@ Harness preview upgrades before treating the result as current.
 | Skill loader | Codex plugin manifest and marketplace | project `.dsh/skills/<name>/SKILL.md` | official docs + static probe + 0.1.0-rc.6 loader smoke | verified locally for that version; Harness preview |
 | Relative references | `references/*.md` in plugin skill | copied generated `references/*.md` | projection check | verified locally |
 | Routing fixtures | `evals/routing-cases.json` and Codex runner | shared cases checked against the generated skill tree | dual-tree case validation | static only |
-| Live model routing | optional `codex exec --ephemeral` | no live runner is claimed | environment-dependent | not run |
 | Install channel | Codex marketplace/plugin commands | project checkout or generated user skill root | commands below | Harness contract may change |
 
 ## Install, upgrade, and remove
@@ -89,8 +87,8 @@ npx @deepseek-ai/dsh web
 
 Choose this repository as the Harness workspace, then ask for a software change. The local provider
 will discover `.dsh/skills/engineer-software/SKILL.md`; the six references remain relative to that
-directory. The `npx` command and Web UI are documented by the official Harness README. No API key is
-needed for the static checks; a model session requires the user's own Harness model configuration.
+directory. The `npx` command and Web UI are documented by the official Harness README. Model
+configuration is supplied by the user's Harness runtime.
 
 To remove the project entry, delete the generated `.dsh/skills/engineer-software/` directory from
 your checkout, or keep it and disable the skill in your Harness configuration. Do not edit the

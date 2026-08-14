@@ -78,7 +78,7 @@ def main() -> int:
         return 1
     print("DeepSeek Harness static compatibility probe passed.")
     print("Official contract: project .dsh/skills/<name>/SKILL.md plus relative resources.")
-    print("Status: developer preview; no live model/API verification was performed.")
+    print("Status: developer preview; filesystem loader contract is checked separately.")
     return 0
 
 

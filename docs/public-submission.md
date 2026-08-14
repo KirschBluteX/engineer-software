@@ -69,7 +69,13 @@ read-only routing runner.
 
 The same canonical workflow is also exposed through a generated project-local DeepSeek Harness
 skill projection. DeepSeek Harness is a developer preview; this project makes no official
-partnership, contributor, or live-API claim.
+partnership or contributor claim.
+
+## 0.1.1 release notes
+
+This patch release consolidates duplicate validation paths, keeps the six public workflows and
+single canonical skill source, and records the official Harness filesystem-loader smoke for the
+generated project-local projection.
 
 ## Copy-ready launch text
 

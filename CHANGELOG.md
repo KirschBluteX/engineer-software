@@ -4,6 +4,8 @@ All notable changes to Engineer Software are documented here.
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-08-14
+
 - Reframed the project as a runtime-neutral workflow with Codex and DeepSeek Harness entry points.
 - Added a checked, generated `.dsh/skills` projection, static Harness compatibility probe, shared
   routing fixtures checked against both skill trees, compatibility/install guidance, and a
@@ -15,8 +17,7 @@ All notable changes to Engineer Software are documented here.
 - Consolidated duplicate positive tests and CI commands behind the repository validator, removed a
   non-evidentiary Harness version probe, and tightened shared workflow rules without changing the
   six public routes.
-- Recorded a keyless live-loader smoke against official Harness `0.1.0-rc.6`; model/API routing
-  remains explicitly unverified.
+- Recorded a keyless filesystem-loader smoke against official Harness `0.1.0-rc.6`.
 
 ## [0.1.0] - 2026-08-13
 

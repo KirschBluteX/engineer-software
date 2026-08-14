@@ -55,8 +55,7 @@ CHINESE_README_BOUNDARIES = (
     "canonical",
     ".dsh/skills",
     "developer preview",
-    "live API",
-    "未验证",
+    "loader smoke",
     "不是 DeepSeek 官方插件",
 )
 

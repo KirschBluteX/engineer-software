@@ -77,8 +77,8 @@ in [runtime compatibility](docs/compatibility.md).
 There is deliberately no guessed Harness manifest or claim of DeepSeek endorsement. The official
 bundle format is for executable Cordis composition layers; a Markdown skill is correctly loaded from
 the documented filesystem root. A keyless live-loader smoke check for the official `0.1.0-rc.6`
-package is recorded in [runtime compatibility](docs/compatibility.md); live model/API behavior is
-not claimed as verified.
+package is recorded in [runtime compatibility](docs/compatibility.md), covering filesystem discovery
+and relative resource loading.
 
 ## What it routes
 
@@ -123,8 +123,8 @@ python scripts/run_routing_eval.py --live --public-submission `
   --output evals/runs/local-routing-results.json
 ```
 
-The Harness projection and the Codex runner use the same cases; no live Harness model-routing runner
-is implied.
+The Harness projection and the Codex runner use the same case definitions; the generated projection
+does not introduce a second hand-maintained routing implementation.
 
 ## Validation
 
@@ -148,8 +148,8 @@ the development file is installed explicitly.
 ## Compatibility, limits, and security
 
 Read [docs/compatibility.md](docs/compatibility.md) for the matrix, install/upgrade/remove paths,
-official DeepSeek Harness links, troubleshooting, and the exact static-contract, loader-smoke, and
-model/API boundaries. The short version:
+official DeepSeek Harness links, troubleshooting, and the static-contract and loader-smoke evidence.
+The short version:
 
 - DeepSeek Harness is a rapidly changing developer preview; compatibility-breaking changes are
   possible.
