@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">Engineer Software icon</title>
+  <desc id="desc">A dark square with an evidence bracket and a green verification mark.</desc>
+  <rect width="128" height="128" rx="24" fill="#0F172A"/>
+  <path d="M40 31H27a8 8 0 0 0-8 8v50a8 8 0 0 0 8 8h13" fill="none" stroke="#38BDF8" stroke-width="9" stroke-linecap="round"/>
+  <path d="M88 31h13a8 8 0 0 1 8 8v50a8 8 0 0 1-8 8H88" fill="none" stroke="#38BDF8" stroke-width="9" stroke-linecap="round"/>
+  <path d="m45 66 12 12 27-30" fill="none" stroke="#34D399" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,110 +1,277 @@
 [
   {
-    "id": "unclear-cache-behavior",
+    "id": "direct-unclear-cache-behavior",
+    "polarity": "positive",
+    "mode": "direct",
     "prompt": "Add caching to search, but first help me decide freshness, invalidation, and what users should see when the cache is stale.",
     "route": "shape-work",
-    "allowed_next": ["probe-choice", "deliver-change"]
+    "allowed_next": ["probe-choice", "deliver-change"],
+    "expected_behavior": "Activate Engineer Software and start with Shape Work because observable behavior and acceptance remain open.",
+    "expected_result": "A bounded contract covering freshness, invalidation, stale behavior, scope, and acceptance evidence; no production edit before closure.",
+    "fixture": "A repository with an existing search path and no documented cache policy."
   },
   {
-    "id": "migration-boundaries-open",
+    "id": "indirect-migration-boundaries-open",
+    "polarity": "positive",
+    "mode": "indirect",
     "prompt": "Plan moving sessions to a new store. Compatibility, cutover, and acceptable downtime are still undecided.",
     "route": "shape-work",
-    "allowed_next": ["probe-choice", "deliver-change", "manage-work-items"]
+    "allowed_next": ["deliver-change", "manage-work-items"],
+    "expected_behavior": "Infer that the request needs Shape Work even though it asks for a plan rather than naming the module.",
+    "expected_result": "A smallest-sufficient migration contract with protected compatibility, cutover constraints, acceptance checks, and explicit unresolved decisions.",
+    "fixture": "A repository with a current session store and no migration decision record."
   },
   {
-    "id": "intermittent-duplicate",
+    "id": "follow-up-symptom-after-shaping",
+    "polarity": "positive",
+    "mode": "follow-up",
+    "prompt": "We closed the new checkout contract, but the existing duplicate-order symptom still has no known cause. Continue from that evidence.",
+    "route": "shape-work",
+    "allowed_next": ["trace-failure"],
+    "expected_behavior": "Finish the closed shaping context and transition only to Trace Failure for the still-unexplained symptom.",
+    "expected_result": "A transition statement carrying the contract forward and identifying the unknown failure mechanism as the remaining need.",
+    "fixture": "Conversation context containing an accepted checkout contract but no reproduction or root cause."
+  },
+  {
+    "id": "direct-intermittent-duplicate",
+    "polarity": "positive",
+    "mode": "direct",
     "prompt": "Checkout sometimes creates a duplicate order under load. Find the cause and fix it.",
     "route": "trace-failure",
-    "allowed_next": ["deliver-change"]
+    "allowed_next": ["deliver-change"],
+    "expected_behavior": "Start with Trace Failure because a symptom exists but the cause is unknown; do not patch speculatively.",
+    "expected_result": "A reproducible signal and causal evidence, followed by a scoped transition to delivery only if the cause closes the edit boundary.",
+    "fixture": "A checkout test fixture that can issue concurrent requests against a fake payment boundary."
   },
   {
-    "id": "unknown-test-regression",
+    "id": "indirect-unknown-test-regression",
+    "polarity": "positive",
+    "mode": "indirect",
     "prompt": "This test suite began failing after yesterday's merge. We do not know which change or code path caused it.",
     "route": "trace-failure",
-    "allowed_next": ["deliver-change"]
+    "allowed_next": ["deliver-change"],
+    "expected_behavior": "Route to Trace Failure from the unknown cause, even though the user did not explicitly request debugging workflow.",
+    "expected_result": "A minimized reproduction, ranked falsifiable hypotheses, causal evidence, and retained regression coverage if the real path is exercised.",
+    "fixture": "A repository with a deterministic failing test and a known last-good revision."
   },
   {
-    "id": "state-model-experiment",
+    "id": "follow-up-cause-exposes-product-choice",
+    "polarity": "positive",
+    "mode": "follow-up",
+    "prompt": "The trace proves both retry branches are working as written; the duplicate occurs because product behavior for ambiguous payment responses was never defined.",
+    "route": "trace-failure",
+    "allowed_next": ["shape-work"],
+    "expected_behavior": "Close Trace Failure with the causal evidence and transition to Shape Work instead of choosing product behavior while patching.",
+    "expected_result": "A cause report plus a narrow open decision about ambiguous responses, compatibility, and acceptance.",
+    "fixture": "Completed trace evidence showing two contract-compliant retry branches."
+  },
+  {
+    "id": "direct-state-model-experiment",
+    "polarity": "positive",
+    "mode": "direct",
     "prompt": "Build a disposable experiment to compare two state-transition models before we choose one.",
     "route": "probe-choice",
-    "allowed_next": ["shape-work", "deliver-change"]
+    "allowed_next": ["shape-work", "deliver-change"],
+    "expected_behavior": "Use Probe Choice for one named decision and keep the experiment out of production paths.",
+    "expected_result": "A bounded runnable probe, observed results, decision consequence, and cleanup state.",
+    "fixture": "Two candidate transition tables and a fixed set of representative events."
   },
   {
-    "id": "interaction-variant-probe",
+    "id": "indirect-interaction-variant-probe",
+    "polarity": "positive",
+    "mode": "indirect",
     "prompt": "Make a throwaway page with three navigation variants so we can learn which interaction is understandable.",
     "route": "probe-choice",
-    "allowed_next": ["shape-work", "deliver-change"]
+    "allowed_next": ["shape-work", "deliver-change"],
+    "expected_behavior": "Infer Probe Choice from the disposable experiment and named interaction decision.",
+    "expected_result": "A minimal comparison with fixed tasks, visible observations, a choice consequence, and removed throwaway code.",
+    "fixture": "A frontend test harness and three supplied navigation labels."
   },
   {
-    "id": "closed-feature",
+    "id": "follow-up-probe-uncovers-failure",
+    "polarity": "positive",
+    "mode": "follow-up",
+    "prompt": "The state-model probe crashes only on the third transition, and we cannot explain why. Do not promote the probe; investigate the failure.",
+    "route": "probe-choice",
+    "allowed_next": ["trace-failure"],
+    "expected_behavior": "Close the probe as inconclusive and transition to Trace Failure for the unexplained crash.",
+    "expected_result": "The probe remains disposable while its smallest failing transition becomes diagnostic evidence.",
+    "fixture": "A completed probe run with a deterministic crash on one fixed event sequence."
+  },
+  {
+    "id": "direct-closed-feature",
+    "polarity": "positive",
+    "mode": "direct",
     "prompt": "Add the documented --json flag to the existing status command and verify the specified output contract.",
     "route": "deliver-change",
-    "allowed_next": []
+    "allowed_next": [],
+    "expected_behavior": "Start with Deliver Change because the outcome, public contract, and verification seam are closed.",
+    "expected_result": "A focused failing check, the smallest implementation, affected tests, and final diff evidence.",
+    "fixture": "A CLI repository with the status command and documented JSON schema."
   },
   {
-    "id": "known-cause-fix",
+    "id": "direct-known-cause-fix",
+    "polarity": "positive",
+    "mode": "direct",
     "prompt": "The off-by-one is confirmed in the pagination end-index calculation. Apply the narrow fix and add regression evidence.",
     "route": "deliver-change",
-    "allowed_next": []
+    "allowed_next": [],
+    "expected_behavior": "Bypass diagnosis and use Deliver Change because the cause and edit boundary are already established.",
+    "expected_result": "A regression check that initially fails for the confirmed boundary and passes after the narrow edit.",
+    "fixture": "A pagination function plus a reproducible final-page example."
   },
   {
-    "id": "behavior-preserving-refactor",
+    "id": "boundary-behavior-preserving-refactor",
+    "polarity": "positive",
+    "mode": "boundary",
     "prompt": "Refactor the accepted parser implementation without changing its public behavior, then prove compatibility.",
     "route": "deliver-change",
-    "allowed_next": ["inspect-structure"]
+    "allowed_next": ["inspect-structure"],
+    "expected_behavior": "Use Deliver Change with characterization evidence; transition to structural inspection only if ownership cannot be established.",
+    "expected_result": "Before-and-after compatibility evidence and a final diff with no speculative abstraction or dual path.",
+    "fixture": "An accepted parser API and representative characterization tests."
   },
   {
-    "id": "duplicate-policy-audit",
+    "id": "follow-up-contract-invalidated-during-delivery",
+    "polarity": "positive",
+    "mode": "follow-up",
+    "prompt": "While implementing the agreed export, repository evidence shows existing clients depend on the old null behavior and compatibility was never decided.",
+    "route": "deliver-change",
+    "allowed_next": ["shape-work"],
+    "expected_behavior": "Stop delivery and transition to Shape Work because new evidence invalidates the compatibility contract.",
+    "expected_result": "No stacked compatibility patch; report the affected clients and the precise behavior decision now required.",
+    "fixture": "Call-site evidence showing both old null consumers and the proposed export contract."
+  },
+  {
+    "id": "follow-up-cause-invalidated-during-delivery",
+    "polarity": "positive",
+    "mode": "follow-up",
+    "prompt": "The regression test still fails after the assumed fix and proves the reported cause cannot explain the symptom.",
+    "route": "deliver-change",
+    "allowed_next": ["trace-failure"],
+    "expected_behavior": "Stop stacking patches and transition to Trace Failure because direct evidence invalidated the assumed cause.",
+    "expected_result": "The failed edit is not presented as a fix; the surviving reproduction is carried into diagnosis.",
+    "fixture": "A focused regression test and an attempted narrow patch that does not change its result."
+  },
+  {
+    "id": "direct-duplicate-policy-audit",
+    "polarity": "positive",
+    "mode": "direct",
     "prompt": "Audit this repository for duplicated authorization policy and competing sources of truth. Report evidence before proposing changes.",
     "route": "inspect-structure",
-    "allowed_next": ["shape-work", "deliver-change"]
+    "allowed_next": ["shape-work", "deliver-change"],
+    "expected_behavior": "Use Inspect Structure read-only and distinguish intentional boundaries from duplicated ownership.",
+    "expected_result": "Evidence-ranked findings citing owners, callers, impact, false-positive checks, and a recommended boundary without editing production structure.",
+    "fixture": "A repository with policy checks in middleware, domain services, and tests."
   },
   {
-    "id": "redundant-serialization",
+    "id": "indirect-redundant-serialization",
+    "polarity": "positive",
+    "mode": "indirect",
     "prompt": "Determine whether these three serializer layers are intentionally distinct or redundant architecture.",
     "route": "inspect-structure",
-    "allowed_next": ["shape-work", "deliver-change"]
+    "allowed_next": ["shape-work", "deliver-change"],
+    "expected_behavior": "Infer a structural inspection rather than beginning a refactor.",
+    "expected_result": "A traced responsibility map and keep, merge, delete, re-home, or investigate recommendation for each surviving candidate.",
+    "fixture": "Three serializers with public callers and tests, including one generated protocol mirror."
   },
   {
-    "id": "local-prd",
+    "id": "direct-local-prd",
+    "polarity": "positive",
+    "mode": "direct",
     "prompt": "Turn the agreed feature discussion into a local PRD draft with acceptance criteria. Do not publish anything remotely.",
     "route": "manage-work-items",
-    "allowed_next": []
+    "allowed_next": [],
+    "expected_behavior": "Use Manage Work Items and keep the artifact local or in the conversation.",
+    "expected_result": "A concise PRD with observable outcome, users, behavior, constraints, acceptance, decisions, assumptions, and exclusions.",
+    "fixture": "An accepted feature discussion supplied in the current conversation."
   },
   {
-    "id": "local-task-slices",
-    "prompt": "Break this specification into independently verifiable local task drafts, show their dependencies, then implement the first closed slice.",
+    "id": "follow-up-local-task-slices",
+    "polarity": "positive",
+    "mode": "follow-up",
+    "prompt": "Break this accepted specification into independently verifiable local task drafts, show dependencies, then implement the first closed slice.",
     "route": "manage-work-items",
-    "allowed_next": ["deliver-change"]
+    "allowed_next": ["deliver-change"],
+    "expected_behavior": "Draft vertical work items first, then transition only the first closed slice to Deliver Change.",
+    "expected_result": "Local task drafts with acceptance and dependencies plus an explicit transition boundary for one executable slice.",
+    "fixture": "An accepted specification with no remaining product decisions."
   },
   {
-    "id": "remote-request-stays-draft",
-    "prompt": "Draft the issue set for this feature so I can review it before anyone posts it to a remote tracker.",
-    "route": "manage-work-items",
-    "allowed_next": []
+    "id": "boundary-large-but-closed-change",
+    "polarity": "positive",
+    "mode": "boundary",
+    "prompt": "The API schema, compatibility rules, migration order, and acceptance suite are approved. Implement the change even though it touches many files.",
+    "route": "deliver-change",
+    "allowed_next": [],
+    "expected_behavior": "Choose Deliver Change rather than Shape Work; task size alone is not unresolved scope.",
+    "expected_result": "Incremental verified slices that preserve the approved contract and use the structure-risk gate where ownership moves.",
+    "fixture": "An approved schema, migration plan, and executable acceptance suite."
   },
   {
-    "id": "explain-code",
+    "id": "boundary-known-cause-not-diagnosis",
+    "polarity": "positive",
+    "mode": "boundary",
+    "prompt": "A minimized test proves the crash is caused by dereferencing the optional owner field. Guard that exact boundary and retain the test.",
+    "route": "deliver-change",
+    "allowed_next": [],
+    "expected_behavior": "Route directly to Deliver Change instead of repeating Trace Failure.",
+    "expected_result": "A narrow guard with the established test as before-and-after evidence.",
+    "fixture": "A minimized failing test and confirmed dereference stack trace."
+  },
+  {
+    "id": "boundary-unknown-performance-cause",
+    "polarity": "positive",
+    "mode": "boundary",
+    "prompt": "Search latency doubled after the release, but we do not know whether the database, cache, or serialization path is responsible. Fix it.",
+    "route": "trace-failure",
+    "allowed_next": ["deliver-change"],
+    "expected_behavior": "Route to Trace Failure despite the requested fix because the performance cause is unknown.",
+    "expected_result": "A repeatable metric and baseline, profiling or targeted probes, causal evidence, then a scoped fix transition.",
+    "fixture": "A repeatable search benchmark plus database, cache, and serialization observability."
+  },
+  {
+    "id": "negative-explain-code",
+    "polarity": "negative",
+    "mode": "negative",
     "prompt": "Explain what this function does and why it returns null here.",
     "route": "bypass",
-    "allowed_next": []
+    "allowed_next": [],
+    "expected_behavior": "Do not activate Engineer Software; answer the ordinary code-reading question directly.",
+    "expected_result": "A concise explanation grounded in the supplied function, with no workflow ceremony.",
+    "fixture": "A self-contained function body supplied with the prompt."
   },
   {
-    "id": "mechanical-rename",
+    "id": "negative-mechanical-rename",
+    "polarity": "negative",
+    "mode": "negative",
     "prompt": "Rename the misspelled documentation file and update its two known links.",
     "route": "bypass",
-    "allowed_next": []
+    "allowed_next": [],
+    "expected_behavior": "Do not activate Engineer Software for a specified reversible file operation.",
+    "expected_result": "The file and two links are updated and checked without loading a workflow module.",
+    "fixture": "One misspelled Markdown filename and exactly two references."
   },
   {
-    "id": "asset-curation",
-    "prompt": "Choose six existing screenshots, copy them into the requested folder, verify the copies, then commit and push as already authorized.",
-    "route": "bypass",
-    "allowed_next": []
-  },
-  {
-    "id": "format-only",
+    "id": "negative-format-only",
+    "polarity": "negative",
+    "mode": "negative",
     "prompt": "Format this JSON file with the repository's existing formatter and make no semantic changes.",
     "route": "bypass",
-    "allowed_next": []
+    "allowed_next": [],
+    "expected_behavior": "Do not activate Engineer Software for a fully specified format-only operation.",
+    "expected_result": "Formatter output plus a semantic-equivalence check, with no routing module.",
+    "fixture": "A valid unformatted JSON file and an existing formatter command."
+  },
+  {
+    "id": "negative-translation-only",
+    "polarity": "negative",
+    "mode": "negative",
+    "prompt": "Translate this release note from English to Chinese without changing its technical meaning.",
+    "route": "bypass",
+    "allowed_next": [],
+    "expected_behavior": "Do not activate Engineer Software for translation-only work.",
+    "expected_result": "A faithful translation without planning, diagnosis, or implementation workflow.",
+    "fixture": "A self-contained release note supplied in the prompt."
   }
 ]

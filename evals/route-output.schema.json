@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["activation", "route", "reason"],
+  "properties": {
+    "activation": {
+      "type": "string",
+      "enum": ["activate", "bypass"]
+    },
+    "route": {
+      "type": "string",
+      "enum": [
+        "shape-work",
+        "trace-failure",
+        "probe-choice",
+        "deliver-change",
+        "inspect-structure",
+        "manage-work-items",
+        "bypass"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 280
+    }
+  }
+}

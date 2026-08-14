@@ -1,7 +1,7 @@
 {
   "name": "engineer-software",
-  "version": "0.1.0+codex.20260807134603",
-  "description": "A focused, evidence-driven workflow for software engineering tasks.",
+  "version": "0.1.0+codex.20260814021516",
+  "description": "Evidence-driven workflows for software engineering.",
   "author": {
     "name": "KirschBluteX",
     "url": "https://github.com/KirschBluteX"
@@ -19,16 +19,27 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Engineer Software",
-    "shortDescription": "Focused software delivery with evidence",
-    "longDescription": "Routes software work into one focused module at a time for shaping, diagnosis, disposable probes, implementation, structural inspection, or local work-item drafting.",
+    "shortDescription": "Evidence-led software work",
+    "longDescription": "Routes software tasks to one bounded workflow for shaping, diagnosis, probes, implementation, structural review, or local planning.",
     "developerName": "KirschBluteX",
-    "category": "Productivity",
-    "capabilities": [],
+    "category": "Developer Tools",
+    "capabilities": [
+      "Plan",
+      "Diagnose",
+      "Probe",
+      "Implement",
+      "Review"
+    ],
     "websiteURL": "https://github.com/KirschBluteX/engineer-software",
+    "privacyPolicyURL": "https://github.com/KirschBluteX/engineer-software/blob/main/PRIVACY.md",
+    "termsOfServiceURL": "https://github.com/KirschBluteX/engineer-software/blob/main/TERMS.md",
+    "brandColor": "#0F172A",
+    "composerIcon": "./assets/engineer-software-icon.svg",
+    "logo": "./assets/engineer-software-logo.svg",
     "defaultPrompt": [
-      "Use Engineer Software to implement this change with focused evidence.",
-      "Use Engineer Software to diagnose this failure before editing.",
-      "Use Engineer Software to inspect this design for redundant structure."
+      "Use Engineer Software to shape this change and define acceptance evidence.",
+      "Use Engineer Software to trace this failure before editing.",
+      "Use Engineer Software to deliver and verify this code change."
     ]
   }
 }

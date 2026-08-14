@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">Engineer Software logo</title>
+  <desc id="desc">A square software-engineering logo made from brackets, evidence lines, and a check mark.</desc>
+  <rect width="128" height="128" rx="24" fill="#111827"/>
+  <path d="M35 27H25a8 8 0 0 0-8 8v58a8 8 0 0 0 8 8h10M93 27h10a8 8 0 0 1 8 8v58a8 8 0 0 1-8 8H93" fill="none" stroke="#7DD3FC" stroke-width="8" stroke-linecap="round"/>
+  <path d="M43 43h30M43 64h16M43 85h12" stroke="#CBD5E1" stroke-width="7" stroke-linecap="round"/>
+  <path d="m72 78 8 8 18-22" fill="none" stroke="#34D399" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
