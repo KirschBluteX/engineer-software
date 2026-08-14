@@ -29,6 +29,7 @@ EXPECTED_REFERENCES = {f"{route}.md" for route in EXPECTED_ROUTES}
 REQUIRED_REFERENCE_HEADINGS = ("## Enter", "## Execute", "## Exit")
 REQUIRED_PUBLIC_FILES = {
     "README.md",
+    "README.zh-CN.md",
     "LICENSE",
     "CHANGELOG.md",
     "CONTRIBUTING.md",
@@ -40,6 +41,36 @@ REQUIRED_PUBLIC_FILES = {
     "docs/compatibility.md",
 }
 SCAFFOLD_MARKER = "[TO" + "DO"
+CHINESE_README_REQUIRED_LINKS = (
+    "README.md",
+    "docs/compatibility.md",
+    "CONTRIBUTING.md",
+    "ROADMAP.md",
+    "SECURITY.md",
+    "PRIVACY.md",
+    "TERMS.md",
+)
+CHINESE_README_REQUIRED_PHRASES = (
+    "30 秒理解",
+    "Codex",
+    "DeepSeek Harness",
+    ".dsh/skills",
+    "developer preview",
+    "live API",
+    "未验证",
+    "不是 DeepSeek 官方插件",
+    "Shape Work",
+    "Trace Failure",
+    "Probe Choice",
+    "Deliver Change",
+    "Inspect Structure",
+    "Manage Work Items",
+    "npx @deepseek-ai/dsh web",
+    "npx @deepseek-ai/dsh@latest web",
+    "--target",
+    "validate_project.py",
+    "validate_harness.py --check",
+)
 
 
 def relative(path: Path) -> str:
@@ -200,11 +231,41 @@ def validate_public_files(readme: str, license_text: str, errors: list[str]) -> 
         "validate_evals.py",
         "runtime-neutral",
         ".dsh/skills",
+        "README.zh-CN.md",
     ):
         if phrase not in readme:
             errors.append(f"README must contain {phrase!r}")
     if "MIT License" not in license_text:
         errors.append("LICENSE is not the MIT License")
+
+
+def validate_chinese_readme(text: str, errors: list[str]) -> None:
+    """Keep the Chinese entry point complete without duplicating the canonical skill."""
+    if not text:
+        return
+    for phrase in CHINESE_README_REQUIRED_PHRASES:
+        if phrase not in text:
+            errors.append(f"README.zh-CN.md must contain {phrase!r}")
+    for target in CHINESE_README_REQUIRED_LINKS:
+        if f"]({target})" not in text:
+            errors.append(f"README.zh-CN.md must link to {target}")
+
+    for raw in re.findall(r"\]\(([^)]+)\)", text):
+        target = raw.split("#", 1)[0].strip()
+        if target.startswith(("http://", "https://", "mailto:", "//")):
+            continue
+        if target.startswith("<") and target.endswith(">"):
+            target = target[1:-1]
+        if not target:
+            continue
+        candidate = (ROOT / target).resolve()
+        try:
+            candidate.relative_to(ROOT.resolve())
+        except ValueError:
+            errors.append(f"README.zh-CN.md link escapes repository: {target}")
+        else:
+            if not candidate.is_file():
+                errors.append(f"README.zh-CN.md links to missing file: {target}")
 
 
 def validate_repository_text(errors: list[str]) -> None:
@@ -237,6 +298,7 @@ def validate_project() -> list[str]:
     skill = read_text(SKILL_PATH, errors)
     metadata = read_text(SKILL_DIR / "agents" / "openai.yaml", errors)
     readme = read_text(ROOT / "README.md", errors)
+    chinese_readme = read_text(ROOT / "README.zh-CN.md", errors)
     license_text = read_text(ROOT / "LICENSE", errors)
 
     validate_marketplace(marketplace, errors)
@@ -262,6 +324,7 @@ def validate_project() -> list[str]:
     errors.extend(f"routing preflight: {error}" for error in case_errors)
 
     validate_public_files(readme, license_text, errors)
+    validate_chinese_readme(chinese_readme, errors)
     validate_harness_projection(errors)
     validate_repository_text(errors)
     return errors

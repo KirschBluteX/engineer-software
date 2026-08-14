@@ -4,6 +4,8 @@
 
 **A runtime-neutral, evidence-driven software engineering workflow for AI coding agents.**
 
+[简体中文](README.zh-CN.md)
+
 Engineer Software helps an agent choose the smallest trustworthy next move: close an unclear
 contract, trace an unexplained failure, run one disposable probe, deliver a defined change, inspect
 structural redundancy, or draft local work items. Codex and DeepSeek Harness are two first-class

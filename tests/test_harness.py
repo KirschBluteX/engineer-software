@@ -17,6 +17,7 @@ CASES = ROOT / "evals" / "routing-cases.json"
 sys.path.insert(0, str(ROOT / "scripts"))
 from sync_harness_skill import compare_projection, expected_files  # noqa: E402
 from validate_harness import OFFICIAL_SOURCES, static_errors  # noqa: E402
+from validate_project import validate_chinese_readme  # noqa: E402
 
 
 class HarnessContractTests(unittest.TestCase):
@@ -85,6 +86,14 @@ class HarnessContractTests(unittest.TestCase):
                 continue
             with self.subTest(target=target):
                 self.assertTrue((ROOT / target).is_file(), target)
+
+    def test_chinese_readme_links_and_boundaries(self) -> None:
+        english = (ROOT / "README.md").read_text(encoding="utf-8")
+        chinese = (ROOT / "README.zh-CN.md").read_text(encoding="utf-8")
+        self.assertIn("[简体中文](README.zh-CN.md)", english)
+        errors: list[str] = []
+        validate_chinese_readme(chinese, errors)
+        self.assertEqual([], errors)
 
     def test_cover_asset_is_reasonable_png(self) -> None:
         cover = ROOT / "plugins" / "engineer-software" / "assets" / "engineer-software-cover.png"
