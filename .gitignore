@@ -14,3 +14,8 @@ venv/
 Thumbs.db
 evals/runs/
 dist/
+
+# DeepSeek Harness runtime state is local; the checked-in skill projection is intentional.
+.dsh/*
+!.dsh/skills/
+!.dsh/skills/**
