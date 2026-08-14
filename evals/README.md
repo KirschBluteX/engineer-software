@@ -1,6 +1,6 @@
 # Routing evaluations
 
-`routing-cases.json` is the runtime-neutral source of truth for skill activation and module routing.
+`routing-cases.json` is the runtime-neutral source of truth for expected skill activation and module routing.
 Each case is self-contained and records the prompt, expected activation or bypass, allowed
 evidence-driven transitions, expected result shape, and reproducible fixture. Codex and DeepSeek
 Harness consume the same canonical cases; the Harness side is currently a static projection check,
@@ -19,6 +19,11 @@ Validate the case contract without model access:
 python scripts/validate_evals.py
 python scripts/validate_harness.py --check
 ```
+
+The repository tests apply the same case contract to the canonical references and the generated
+Harness references. This proves projection and fixture consistency, not live model parity.
+An audit-only keyless loader smoke also confirmed that the official `0.1.0-rc.6` filesystem provider
+discovers and loads the project skill; it does not evaluate model routing.
 
 Run a live, read-only routing sample through the installed Codex plugin:
 

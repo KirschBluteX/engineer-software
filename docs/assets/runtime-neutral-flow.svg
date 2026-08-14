@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
   <title id="title">Engineer Software dual-runtime flow</title>
-  <desc id="desc">One canonical skill source is projected to Codex and DeepSeek Harness while shared references and evaluations stay common.</desc>
+  <desc id="desc">Codex loads one canonical skill source directly while DeepSeek Harness uses its checked projection; references and evaluations stay shared.</desc>
   <defs>
     <linearGradient id="core" x1="0" x2="1" y1="0" y2="1">
       <stop offset="0" stop-color="#0f172a"/>
@@ -53,5 +53,5 @@
 
   <rect x="170" y="410" width="860" height="120" fill="#fff" class="box"/>
   <text x="600" y="453" text-anchor="middle" class="label">No runtime-specific workflow fork</text>
-  <text x="600" y="487" text-anchor="middle" class="small">Only the loading projection changes; evidence and module semantics remain shared.</text>
+  <text x="600" y="487" text-anchor="middle" class="small">Only the loading entry changes; evidence and module semantics remain shared.</text>
 </svg>

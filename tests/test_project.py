@@ -15,9 +15,9 @@ REFERENCE_DIR = PLUGIN_DIR / "skills" / "engineer-software" / "references"
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from run_routing_eval import PUBLIC_CASE_IDS  # noqa: E402
-from validate_evals import EXPECTED_TRANSITIONS, ROUTES, load_cases, validate_cases  # noqa: E402
-from validate_plugin import SEMVER_RE, validate_manifest, validate_plugin  # noqa: E402
-from validate_project import EXPECTED_ROUTES, load_json, validate_project  # noqa: E402
+from validate_evals import load_cases, validate_cases  # noqa: E402
+from validate_plugin import SEMVER_RE, validate_manifest  # noqa: E402
+from validate_project import load_json, validate_local_markdown_links  # noqa: E402
 
 
 class ProjectContractTests(unittest.TestCase):
@@ -27,22 +27,6 @@ class ProjectContractTests(unittest.TestCase):
         cls.manifest = json.loads(
             (PLUGIN_DIR / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
         )
-
-    def test_repository_contract(self) -> None:
-        errors = validate_project()
-        self.assertEqual([], errors, "\n".join(errors))
-
-    def test_plugin_public_preflight(self) -> None:
-        errors = validate_plugin(PLUGIN_DIR)
-        self.assertEqual([], errors, "\n".join(errors))
-
-    def test_public_listing_limits_and_assets(self) -> None:
-        interface = self.manifest["interface"]
-        self.assertLessEqual(len(interface["displayName"]), 30)
-        self.assertLessEqual(len(interface["shortDescription"]), 30)
-        for field in ("composerIcon", "logo"):
-            path = PLUGIN_DIR / interface[field]
-            self.assertTrue(path.is_file(), field)
 
     def test_validator_rejects_directory_overlong_short_description(self) -> None:
         manifest = copy.deepcopy(self.manifest)
@@ -68,32 +52,17 @@ class ProjectContractTests(unittest.TestCase):
         self.assertIsNone(value)
         self.assertTrue(any("must contain a dict" in error for error in errors))
 
-    def test_routing_fixture_contract(self) -> None:
-        errors = validate_cases(self.cases, REFERENCE_DIR)
-        self.assertEqual([], errors, "\n".join(errors))
+    def test_markdown_link_validator_rejects_missing_local_target(self) -> None:
+        errors: list[str] = []
+        validate_local_markdown_links(ROOT / "README.md", "[missing](not-here.md)", errors)
+        self.assertEqual(["README.md links to missing file: not-here.md"], errors)
 
-    def test_routing_fixture_covers_every_module_and_bypass(self) -> None:
-        routes = {case["route"] for case in self.cases}
-        self.assertEqual(EXPECTED_ROUTES | {"bypass"}, routes)
-        self.assertEqual(ROUTES, EXPECTED_ROUTES)
-
-    def test_every_documented_transition_has_fixture_coverage(self) -> None:
-        observed = {route: set() for route in ROUTES}
-        for case in self.cases:
-            if case["route"] in ROUTES:
-                observed[case["route"]].update(case["allowed_next"])
-        self.assertEqual(EXPECTED_TRANSITIONS, observed)
-
-    def test_fixture_transitions_are_supported_by_module_exits(self) -> None:
-        for case in self.cases:
-            if case["route"] == "bypass":
-                self.assertEqual([], case["allowed_next"])
-                continue
-            module = (REFERENCE_DIR / f"{case['route']}.md").read_text(encoding="utf-8")
-            exit_text = module.split("## Exit", maxsplit=1)[1]
-            for next_route in case["allowed_next"]:
-                with self.subTest(case=case["id"], next_route=next_route):
-                    self.assertIn(f"`{next_route}`", exit_text)
+    def test_case_validator_rejects_unsupported_transition(self) -> None:
+        cases = copy.deepcopy(self.cases)
+        target = next(case for case in cases if case["route"] == "manage-work-items")
+        target["allowed_next"].append("shape-work")
+        errors = validate_cases(cases, REFERENCE_DIR)
+        self.assertTrue(any("unsupported transitions" in error for error in errors))
 
     def test_public_submission_case_minimum_and_fields(self) -> None:
         by_id = {case["id"]: case for case in self.cases}

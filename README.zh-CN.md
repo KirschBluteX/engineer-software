@@ -44,7 +44,7 @@ codex plugin list
 使用已安装的 Codex 插件管理器移除（示例）：
 
 ```powershell
-codex plugin remove engineer-software
+codex plugin remove engineer-software@engineer-software
 codex plugin list
 ```
 
@@ -146,7 +146,7 @@ Remove-Item -LiteralPath .dsh/skills/engineer-software -Recurse
 | 项目 | 状态 |
 | --- | --- |
 | Codex marketplace/plugin 路径 | 保持原有路径，已在仓库校验中验证 |
-| Harness `.dsh/skills` 项目级投影 | 已按官方文档做静态兼容验证 |
+| Harness `.dsh/skills` 项目级投影 | 已按官方文档做静态兼容验证；官方 loader smoke 已在 `0.1.0-rc.6` 做过 |
 | canonical source 与 Harness 投影 | 字节一致性和相对 references 已检查 |
 | Harness 版本稳定性 | **developer preview**，可能出现兼容性破坏变更 |
 | live Harness/API 或模型路由 | **未验证**；当前交付不声称 live API 覆盖 |
@@ -172,13 +172,14 @@ Remove-Item -LiteralPath .dsh/skills/engineer-software -Recurse
 
 ```powershell
 python -m pip install -r requirements-dev.txt
-python scripts/validate_plugin.py plugins/engineer-software
-python scripts/validate_evals.py
 python scripts/validate_project.py
-python scripts/validate_harness.py --check
 python -m unittest discover -s tests -v
 python -m compileall -q scripts tests
 ```
+
+`validate_project.py` 已聚合插件包、路由夹具、Harness 投影和文档契约。需要定位单项失败时，
+再分别运行 `python scripts/validate_plugin.py plugins/engineer-software`、`python
+scripts/validate_evals.py` 或 `python scripts/validate_harness.py --check`。
 
 无需模型访问即可运行路由夹具：
 
@@ -186,7 +187,9 @@ python -m compileall -q scripts tests
 python scripts/run_routing_eval.py --limit 5
 ```
 
-`validate_harness.py --live` 只有在本机安装了 `dsh` 时才会尝试读取版本；它也不等同于 live API 或模型行为认证。
+上面的静态验证不会调用 Harness、模型或 live API。另有一次无 key 的官方 loader smoke：真实
+`0.1.0-rc.6` 进程在本仓库 workspace 中发现并加载了 `engineer-software`；这不等同于 live
+模型/API 路由认证。
 
 ## 常见问题
 

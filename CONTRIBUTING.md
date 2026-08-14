@@ -30,13 +30,14 @@ or describe the project as an official DeepSeek plugin.
 ## Required checks
 
 ```powershell
-python scripts/validate_plugin.py plugins/engineer-software
-python scripts/validate_evals.py
 python scripts/validate_project.py
 python -m unittest discover -s tests -v
 python -m compileall -q scripts tests
-python scripts/validate_harness.py --check
 ```
+
+The project validator aggregates plugin, routing, Harness projection, and documentation contracts.
+Run `validate_plugin.py`, `validate_evals.py`, or `validate_harness.py --check` directly only when
+isolating a focused failure.
 
 For routing changes, add a self-contained case with expected activation, route, result shape, and
 fixture. Keep every documented transition represented in `evals/routing-cases.json`. Live model

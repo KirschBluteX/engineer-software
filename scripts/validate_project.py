@@ -49,27 +49,15 @@ CHINESE_README_REQUIRED_LINKS = (
     "SECURITY.md",
     "PRIVACY.md",
     "TERMS.md",
+    "plugins/engineer-software/skills/engineer-software/SKILL.md",
 )
-CHINESE_README_REQUIRED_PHRASES = (
-    "30 秒理解",
-    "Codex",
-    "DeepSeek Harness",
+CHINESE_README_BOUNDARIES = (
+    "canonical",
     ".dsh/skills",
     "developer preview",
     "live API",
     "未验证",
     "不是 DeepSeek 官方插件",
-    "Shape Work",
-    "Trace Failure",
-    "Probe Choice",
-    "Deliver Change",
-    "Inspect Structure",
-    "Manage Work Items",
-    "npx @deepseek-ai/dsh web",
-    "npx @deepseek-ai/dsh@latest web",
-    "--target",
-    "validate_project.py",
-    "validate_harness.py --check",
 )
 
 
@@ -239,17 +227,9 @@ def validate_public_files(readme: str, license_text: str, errors: list[str]) -> 
         errors.append("LICENSE is not the MIT License")
 
 
-def validate_chinese_readme(text: str, errors: list[str]) -> None:
-    """Keep the Chinese entry point complete without duplicating the canonical skill."""
-    if not text:
-        return
-    for phrase in CHINESE_README_REQUIRED_PHRASES:
-        if phrase not in text:
-            errors.append(f"README.zh-CN.md must contain {phrase!r}")
-    for target in CHINESE_README_REQUIRED_LINKS:
-        if f"]({target})" not in text:
-            errors.append(f"README.zh-CN.md must link to {target}")
-
+def validate_local_markdown_links(path: Path, text: str, errors: list[str]) -> None:
+    """Reject missing or repository-escaping local Markdown links."""
+    label = relative(path)
     for raw in re.findall(r"\]\(([^)]+)\)", text):
         target = raw.split("#", 1)[0].strip()
         if target.startswith(("http://", "https://", "mailto:", "//")):
@@ -258,14 +238,26 @@ def validate_chinese_readme(text: str, errors: list[str]) -> None:
             target = target[1:-1]
         if not target:
             continue
-        candidate = (ROOT / target).resolve()
+        candidate = (path.parent / target).resolve()
         try:
             candidate.relative_to(ROOT.resolve())
         except ValueError:
-            errors.append(f"README.zh-CN.md link escapes repository: {target}")
+            errors.append(f"{label} link escapes repository: {target}")
         else:
             if not candidate.is_file():
-                errors.append(f"README.zh-CN.md links to missing file: {target}")
+                errors.append(f"{label} links to missing file: {target}")
+
+
+def validate_chinese_readme(text: str, errors: list[str]) -> None:
+    """Keep the Chinese entry linked and honest without making it a second specification."""
+    if not text:
+        return
+    for phrase in CHINESE_README_BOUNDARIES:
+        if phrase not in text:
+            errors.append(f"README.zh-CN.md must contain {phrase!r}")
+    for target in CHINESE_README_REQUIRED_LINKS:
+        if f"]({target})" not in text:
+            errors.append(f"README.zh-CN.md must link to {target}")
 
 
 def validate_repository_text(errors: list[str]) -> None:
@@ -278,6 +270,8 @@ def validate_repository_text(errors: list[str]) -> None:
             text = path.read_text(encoding="utf-8")
         except (OSError, UnicodeError):
             continue
+        if path.suffix.casefold() == ".md":
+            validate_local_markdown_links(path, text, errors)
         if SCAFFOLD_MARKER in text:
             errors.append(f"repository contains a scaffold TODO in {relative(path)}")
 

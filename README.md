@@ -14,8 +14,6 @@ shared.
 
 ![Engineer Software runtime-neutral workflow cover showing Codex and DeepSeek Harness feeding one canonical skill into evidence verification](plugins/engineer-software/assets/engineer-software-cover.png)
 
-![Dual-runtime shared-core flow](docs/assets/runtime-neutral-flow.svg)
-
 ## 30-second overview
 
 1. The thin router checks whether the request is ordinary work or has material engineering
@@ -25,19 +23,11 @@ shared.
    different need.
 4. The same `SKILL.md`, references, and routing cases are available to both runtimes.
 
-```mermaid
-flowchart LR
-    C["Canonical source\nSKILL.md + references"] --> X["Shared evals\nrouting-cases.json"]
-    C --> D["Codex entry\nplugin.json + marketplace"]
-    C --> H["Harness entry\n.dsh/skills projection"]
-    D --> E["Same evidence\nand module semantics"]
-    H --> E
-```
+![Dual-runtime shared-core flow](docs/assets/runtime-neutral-flow.svg)
 
 The projection is generated and checked; it is not a second hand-maintained workflow. See
 [runtime compatibility](docs/compatibility.md) for the official Harness sources and the preview
-status. The deterministic flow diagram is also available as
-[SVG](docs/assets/runtime-neutral-flow.svg) for Markdown renderers without Mermaid support.
+status.
 
 ## Quick start
 
@@ -57,8 +47,14 @@ codex plugin marketplace upgrade engineer-software
 codex plugin add engineer-software@engineer-software
 ```
 
-Remove it with the installed Codex plugin manager and confirm with `codex plugin list`. The existing
-Codex marketplace manifest and plugin path remain unchanged.
+Remove it with the installed Codex plugin manager and confirm the result:
+
+```powershell
+codex plugin remove engineer-software@engineer-software
+codex plugin list
+```
+
+The existing Codex marketplace manifest and plugin path remain unchanged.
 
 ### DeepSeek Harness
 
@@ -80,7 +76,9 @@ in [runtime compatibility](docs/compatibility.md).
 
 There is deliberately no guessed Harness manifest or claim of DeepSeek endorsement. The official
 bundle format is for executable Cordis composition layers; a Markdown skill is correctly loaded from
-the documented filesystem root. Live Harness/API behavior is not claimed as verified here.
+the documented filesystem root. A keyless live-loader smoke check for the official `0.1.0-rc.6`
+package is recorded in [runtime compatibility](docs/compatibility.md); live model/API behavior is
+not claimed as verified.
 
 ## What it routes
 
@@ -125,7 +123,8 @@ python scripts/run_routing_eval.py --live --public-submission `
   --output evals/runs/local-routing-results.json
 ```
 
-The Harness projection and the Codex runner use the same cases; no live Harness runner is implied.
+The Harness projection and the Codex runner use the same cases; no live Harness model-routing runner
+is implied.
 
 ## Validation
 
@@ -134,24 +133,23 @@ Use Python 3.9 or newer. The repository is standard-library-first; the developme
 
 ```powershell
 python -m pip install -r requirements-dev.txt
-python scripts/validate_plugin.py plugins/engineer-software
-python scripts/validate_evals.py
 python scripts/validate_project.py
-python scripts/validate_harness.py --check
 python -m unittest discover -s tests -v
 python -m compileall -q scripts tests
 ```
 
-`validate_project.py` includes the Harness projection and documentation checks. CI keeps the Python
-3.9/3.12/3.13 matrix and the same validation, routing, unittest, and compile checks. The workflow
-does not enable `setup-python`'s pip cache because this repository has no `requirements.txt` or
-`pyproject.toml` cache contract; the development file is installed explicitly.
+`validate_project.py` aggregates the plugin package, routing fixtures, Harness projection, and
+documentation contracts. For a focused failure, run `python scripts/validate_plugin.py
+plugins/engineer-software`, `python scripts/validate_evals.py`, or `python
+scripts/validate_harness.py --check` directly. CI keeps the Python 3.9/3.12/3.13 matrix plus the
+aggregate validation, unittest, and compile checks. It leaves `setup-python`'s pip cache disabled;
+the development file is installed explicitly.
 
 ## Compatibility, limits, and security
 
 Read [docs/compatibility.md](docs/compatibility.md) for the matrix, install/upgrade/remove paths,
-official DeepSeek Harness links, troubleshooting, and the exact “static only / live not verified”
-boundary. The short version:
+official DeepSeek Harness links, troubleshooting, and the exact static-contract, loader-smoke, and
+model/API boundaries. The short version:
 
 - DeepSeek Harness is a rapidly changing developer preview; compatibility-breaking changes are
   possible.

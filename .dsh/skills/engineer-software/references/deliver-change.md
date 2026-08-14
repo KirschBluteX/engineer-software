@@ -11,7 +11,6 @@ restarting discovery. Return to `trace-failure` when the cause is still unknown.
 ## Execute
 
 1. Inspect repository rules, the working tree, nearby tests, public contracts, and affected callers.
-   Preserve changes that predate the task.
 2. Establish before-change evidence at the cheapest decisive seam:
    - changed behavior: a focused check rejects the desired behavior for the expected reason;
    - defect: the real symptom reproduces;
@@ -20,16 +19,12 @@ restarting discovery. Return to `trace-failure` when the cause is still unknown.
    - configuration or generated output: a parser, schema, build, snapshot, or smoke check exists.
 3. Apply the conditional **structure-risk gate** only when the change adds or moves a module,
    interface, policy, validation rule, state owner, data representation, adapter, migration lane,
-   broad responsibility, or copied nontrivial logic. Search for the existing owner, comparable
-   capability, and real callers.
-   Then check:
-   - extend the authoritative owner instead of creating a parallel implementation;
-   - keep policy, validation, state, and data representation single-sourced;
-   - require wrappers and public interfaces to remove more complexity than they expose;
-   - preserve dependency direction and avoid cycles or permanent dual paths;
-   - give compatibility or migration paths an explicit end state and removal condition.
-   Skip the full gate for a narrow local edit once ownership is obvious. If the gate cannot be judged
-   locally, stop and enter `inspect-structure`.
+   broad responsibility, or copied nontrivial logic. Find the existing owner, comparable capability,
+   and real callers; extend that owner instead of creating a parallel implementation. Keep policy,
+   validation, state, and data representation single-sourced; preserve dependency direction; and
+   reject wrappers, dual paths, or migration lanes without a net simplification and explicit removal
+   condition. Skip the full gate for a narrow local edit with obvious ownership. If ownership or the
+   safe boundary cannot be judged locally, stop and enter `inspect-structure`.
 4. Change one independently verifiable behavior slice at a time. For new or changed behavior, write
    or strengthen the decisive check before production code when a correct seam exists, observe the
    expected failure, implement only enough to pass, and inspect the actual result.
@@ -53,5 +48,3 @@ report the missing seam; do not add a shallow test that cannot observe the real 
 - Otherwise report the changed behavior and scope, decisive starting evidence, fresh final
   verification with exact outcomes, structural-gate result when it ran, and any pre-existing failure
   or remaining uncertainty.
-
-Commit, push, publish, or deploy only when separately authorized.

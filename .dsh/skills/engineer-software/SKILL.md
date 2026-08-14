@@ -18,16 +18,14 @@ alternative starting modes, not phases that every task must traverse.
 ## Operating contract
 
 1. Read repository instructions and inspect existing user changes before any edit.
-2. Check the bypass boundary before choosing a module.
-3. Select the first module from the user's current uncertainty, not from the eventual task type.
-4. Read exactly one primary module before acting. Do not pre-read other modules for completeness.
-5. Stay in that module until it finishes or its exit evidence proves another module is necessary.
-6. Before a transition, state the evidence that closed the current module and the unresolved need
-   the next module must handle. Then return here and read only that next module.
-7. Bind completion claims to fresh evidence from the final relevant state. Label manual, missing,
+2. Check the bypass boundary, then select the first module from the user's current uncertainty.
+3. Read exactly one primary module before acting. Do not pre-read other modules; stay until its exit
+   evidence closes the module or proves another is necessary.
+4. Before a transition, state the closing evidence and unresolved next need, then return here and
+   read only that next module. Never repeat a module or cycle without new evidence; stop with the
+   blocker when another pass would only repeat questions, probes, or patches.
+5. Bind completion claims to fresh evidence from the final relevant state. Label manual, missing,
    flaky, or environment-dependent evidence instead of calling it a pass.
-8. Never repeat a module or traverse a cycle without new evidence. Stop with the unresolved blocker
-   when another pass would only repeat questions, probes, or patches.
 
 ## Bypass
 
@@ -57,7 +55,6 @@ a material software decision, unknown cause, structural risk, or nontrivial acce
   pre-implementation stage.
 - For a mixed request, start with the earliest unresolved condition that can invalidate later work.
   Skip `shape-work` when the request and repository already close the contract.
-- Keep work-item output local or in the conversation. Remote publication is outside this skill.
 
 ## Shared boundaries
 

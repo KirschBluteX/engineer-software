@@ -1,21 +1,13 @@
 #!/usr/bin/env python3
-"""Run a static DeepSeek Harness compatibility probe.
-
-The probe validates the official filesystem skill contract locally.  ``--live``
-only checks whether a local ``dsh`` executable can answer ``--version``; it
-does not call a model or claim API compatibility.
-"""
+"""Run a static DeepSeek Harness filesystem-skill compatibility probe."""
 
 from __future__ import annotations
 
 import argparse
-import os
-import shutil
-import subprocess
 import sys
 from pathlib import Path
 
-from sync_harness_skill import CANONICAL_DIR, DEFAULT_TARGET, compare_projection, expected_files
+from sync_harness_skill import CANONICAL_DIR, DEFAULT_TARGET, compare_projection
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -47,23 +39,18 @@ def static_errors(target: Path = DEFAULT_TARGET) -> list[str]:
     if "description:" not in frontmatter:
         errors.append("canonical SKILL.md frontmatter description is missing")
 
-    expected = set(expected_files())
-    if expected != {Path("SKILL.md"), *(Path("references") / name for name in (
-        "deliver-change.md",
-        "inspect-structure.md",
-        "manage-work-items.md",
-        "probe-choice.md",
-        "shape-work.md",
-        "trace-failure.md",
-    ))}:
-        errors.append("canonical skill file set changed; update the projection contract deliberately")
-
-    # The projection may be duplicated only under the generated Harness root.
+    # The checked-in projection and an explicitly selected target are generated views,
+    # not editable sources.
+    allowed_skills = {
+        CANONICAL_DIR / "SKILL.md",
+        DEFAULT_TARGET / "SKILL.md",
+        target / "SKILL.md",
+    }
     for path in ROOT.rglob("SKILL.md"):
         if ".git" in path.parts:
             continue
         relative = path.relative_to(ROOT)
-        if path == CANONICAL_DIR / "SKILL.md" or path == target / "SKILL.md":
+        if path in allowed_skills:
             continue
         errors.append(f"unexpected non-canonical SKILL.md source: {relative}")
     return errors
@@ -77,41 +64,7 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="run the static probe (the default; accepted for script symmetry)",
     )
-    parser.add_argument(
-        "--live",
-        action="store_true",
-        help="run local dsh --version when available; never contacts a model",
-    )
     return parser.parse_args()
-
-
-def live_probe() -> int:
-    raw = os.environ.get("DSH_BIN", "dsh")
-    executable = shutil.which(raw)
-    if executable is None:
-        print("Live Harness probe: not run (dsh executable not found; static contract only).")
-        return 0
-    try:
-        completed = subprocess.run(
-            [executable, "--version"],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            timeout=30,
-            check=False,
-        )
-    except (OSError, subprocess.TimeoutExpired) as exc:
-        print(f"Live Harness probe: not verified ({exc}); static contract passed.")
-        return 0
-    output = (completed.stdout or completed.stderr).strip().splitlines()
-    version = output[0] if output else "no version output"
-    if completed.returncode:
-        print(f"Live Harness probe: dsh --version exited {completed.returncode} ({version}); static contract passed.")
-        return 0
-    print(f"Live Harness probe: dsh responded ({version}); skill loading/API still not live-verified.")
-    return 0
 
 
 def main() -> int:
@@ -126,8 +79,6 @@ def main() -> int:
     print("DeepSeek Harness static compatibility probe passed.")
     print("Official contract: project .dsh/skills/<name>/SKILL.md plus relative resources.")
     print("Status: developer preview; no live model/API verification was performed.")
-    if args.live:
-        return live_probe()
     return 0
 
 

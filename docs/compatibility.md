@@ -31,18 +31,26 @@ python scripts/validate_harness.py --check
 ```
 
 The probe verifies file identity, frontmatter, resource paths, and the one-source rule. It does not
-call a model or a live API. `python scripts/validate_harness.py --live` additionally asks a locally
-installed `dsh` executable for `--version` when one is available; a successful version response is
-not runtime or API certification.
+call Harness, a model, or a live API. A CLI version response would not prove skill loading or model
+behavior, so the project does not report one as runtime evidence.
+
+### Local loader smoke (not a CI gate)
+
+During this audit (2026-08-14 UTC), the official `@deepseek-ai/dsh@0.1.0-rc.6` package was started with an isolated
+`DSH_HOME` and the repository selected as a workspace. Its real `FileSystemSkillProvider` returned
+`engineer-software` from the `project-dsh` root at rank 100 and `get()` loaded the projected
+`SKILL.md` body with its generated `references/` resource base. No API key or model request was
+made. This is a version-pinned loader smoke result, not live model/API certification; rerun it after
+Harness preview upgrades before treating the result as current.
 
 ## Compatibility matrix
 
 | Surface | Codex | DeepSeek Harness | Evidence | Status |
 | --- | --- | --- | --- | --- |
 | Canonical workflow | `plugins/engineer-software/skills/engineer-software/` | same source projected to `.dsh/skills/engineer-software/` | byte-for-byte sync test | verified locally |
-| Skill loader | Codex plugin manifest and marketplace | project `.dsh/skills/<name>/SKILL.md` | official docs + static probe | verified locally; Harness preview |
+| Skill loader | Codex plugin manifest and marketplace | project `.dsh/skills/<name>/SKILL.md` | official docs + static probe + 0.1.0-rc.6 loader smoke | verified locally for that version; Harness preview |
 | Relative references | `references/*.md` in plugin skill | copied generated `references/*.md` | projection check | verified locally |
-| Routing fixtures | `evals/routing-cases.json` and Codex runner | shared fixtures and expected routes | `validate_evals.py` + parity test | static only |
+| Routing fixtures | `evals/routing-cases.json` and Codex runner | shared cases checked against the generated skill tree | dual-tree case validation | static only |
 | Live model routing | optional `codex exec --ephemeral` | no live runner is claimed | environment-dependent | not run |
 | Install channel | Codex marketplace/plugin commands | project checkout or generated user skill root | commands below | Harness contract may change |
 
@@ -64,9 +72,9 @@ codex plugin marketplace upgrade engineer-software
 codex plugin add engineer-software@engineer-software
 ```
 
-Remove it with the Codex plugin manager (`codex plugin remove ...`) and confirm with
-`codex plugin list`. Exact command spelling is owned by the installed Codex CLI; this project does
-not emulate or wrap that manager.
+Remove it with `codex plugin remove engineer-software@engineer-software` and confirm with
+`codex plugin list`. Command behavior is owned by the installed Codex CLI; this project does not
+emulate or wrap that manager.
 
 ### DeepSeek Harness (project-local, recommended)
 
@@ -123,10 +131,6 @@ Harness commit/version, rerun the static probe, and consult the official reposit
 and plugin docs before changing this project. Do not infer a manifest or install command from a
 community project with a similar name.
 
-**The live probe is skipped.** That means no `dsh` executable was found locally. It is an honest
-environment result; static checks still prove the repository projection and do not imply live API
-coverage.
-
 ## Security boundary
 
 The skill contains instructions only. It has no MCP server, hook, telemetry, credential handling, or
@@ -135,8 +139,7 @@ permissions belong to the user's Harness profile and workspace policy. Review ge
 placing them in a user-global skill directory, and never commit API keys, `.env` files, session logs,
 or Harness profile state.
 
-## 简短中文入口
+## 中文入口
 
-DeepSeek Harness 目前是 developer preview。项目使用官方支持的项目级 `.dsh/skills` 目录加载
-技能；`SKILL.md` 和 `references/` 由脚本从 Codex canonical source 生成，并由静态 probe 检查漂移。
-这不是 DeepSeek 官方插件或合作声明，live API 验证也未执行。
+安装、升级、卸载、调用、兼容边界和常见问题见完整的
+[简体中文 README](../README.zh-CN.md)。英文 README 与 canonical skill 仍是技术规范来源。
