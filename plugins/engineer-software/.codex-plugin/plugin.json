@@ -14,13 +14,16 @@
     "software-engineering",
     "debugging",
     "testing",
-    "architecture"
+    "architecture",
+    "runtime-neutral",
+    "evidence-driven",
+    "deepseek-harness"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Engineer Software",
     "shortDescription": "Evidence-led software work",
-    "longDescription": "Routes software tasks to one bounded workflow for shaping, diagnosis, probes, implementation, structural review, or local planning.",
+    "longDescription": "A runtime-neutral, evidence-driven workflow that routes software tasks to one bounded module for shaping, diagnosis, probes, implementation, structural review, or local planning.",
     "developerName": "KirschBluteX",
     "category": "Developer Tools",
     "capabilities": [

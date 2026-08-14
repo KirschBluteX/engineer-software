@@ -67,6 +67,37 @@ background service. The repository includes public-directory metadata and assets
 routing cases, local validation, CI, privacy/support/security documents, and an optional live
 read-only routing runner.
 
+The same canonical workflow is also exposed through a generated project-local DeepSeek Harness
+skill projection. DeepSeek Harness is a developer preview; this project makes no official
+partnership, contributor, or live-API claim.
+
+## Copy-ready launch text
+
+Short:
+
+> Runtime-neutral, evidence-driven software engineering workflow for AI coding agents.
+
+Long:
+
+> Engineer Software routes substantive software work through one bounded evidence-driven module at
+> a time: shape unclear contracts, trace unknown failures, probe one decision, deliver defined
+> changes, inspect structural redundancy, or draft local work items. Codex and DeepSeek Harness use
+> one canonical source with deterministic projection checks.
+
+Suggested GitHub repository description:
+
+> A runtime-neutral, evidence-driven software engineering workflow for AI coding agents.
+
+Suggested topics (choose only those that accurately describe the repository):
+
+`ai-coding-agent`, `agent-skills`, `software-engineering`, `evidence-driven`, `codex`,
+`deepseek-harness`, `dsh-plugin`
+
+Suggested homepage: `https://github.com/KirschBluteX/engineer-software`
+
+These are copy suggestions only. Do not represent `dsh-plugin` as an official registry, and do not
+publish GitHub metadata from this repository without a separate publisher decision.
+
 ## Publisher-only final gate
 
 Before selecting **Submit for Review**, the publisher must confirm:
@@ -81,4 +112,3 @@ Before selecting **Submit for Review**, the publisher must confirm:
 
 Submission begins OpenAI review; approval is followed by a separate publisher-controlled public
 release in the universal Plugins Directory.
-

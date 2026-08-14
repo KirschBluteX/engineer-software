@@ -16,6 +16,7 @@ except ImportError:  # pragma: no cover - exercised on minimal installations
 
 from validate_evals import ROUTES as EXPECTED_ROUTES
 from validate_evals import load_cases, validate_cases
+from validate_harness import static_errors
 from validate_plugin import validate_plugin
 
 
@@ -35,6 +36,8 @@ REQUIRED_PUBLIC_FILES = {
     "SECURITY.md",
     "PRIVACY.md",
     "TERMS.md",
+    "ROADMAP.md",
+    "docs/compatibility.md",
 }
 SCAFFOLD_MARKER = "[TO" + "DO"
 
@@ -195,6 +198,8 @@ def validate_public_files(readme: str, license_text: str, errors: list[str]) -> 
         "Python 3.9",
         "validate_plugin.py",
         "validate_evals.py",
+        "runtime-neutral",
+        ".dsh/skills",
     ):
         if phrase not in readme:
             errors.append(f"README must contain {phrase!r}")
@@ -214,6 +219,11 @@ def validate_repository_text(errors: list[str]) -> None:
             continue
         if SCAFFOLD_MARKER in text:
             errors.append(f"repository contains a scaffold TODO in {relative(path)}")
+
+
+def validate_harness_projection(errors: list[str]) -> None:
+    for error in static_errors():
+        errors.append(f"Harness compatibility preflight: {error}")
 
 
 def validate_project() -> list[str]:
@@ -252,6 +262,7 @@ def validate_project() -> list[str]:
     errors.extend(f"routing preflight: {error}" for error in case_errors)
 
     validate_public_files(readme, license_text, errors)
+    validate_harness_projection(errors)
     validate_repository_text(errors)
     return errors
 
