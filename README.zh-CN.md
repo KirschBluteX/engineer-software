@@ -1,6 +1,6 @@
 # Engineer Software 中文入口
 
-[English README](README.md)
+[六个路由模块](#六个路由模块) · [Codex 安装](#codex安装升级卸载与调用) · [DeepSeek Harness](#deepseek-harness安装升级卸载与项目级技能) · [English README](README.md)
 
 **让 AI 编程代理在动手改代码前，先选择正确的工程动作。**
 
@@ -8,12 +8,30 @@ Engineer Software 是一个可安装到 Codex 和 DeepSeek Harness 的技能。�
 未知的故障时，它不会让代理直接跳到修改代码，而是只选择一个边界明确的工作流，并规定
 代理在切换方向或宣布完成前必须提供哪些新证据。
 
+**一眼概览：**6 个边界明确的工作流 · 25 个确定性路由用例 · 2 个运行入口 · 1 份
+canonical source（规范源）
+
+## 六个路由模块
+
+模块是可选的起点，不是每项任务都必须走完的流水线：
+
+| 模块 | 何时使用 | 离开时应有的证据 |
+| --- | --- | --- |
+| **Shape Work** | 行为、范围、兼容性或验收条件仍不清楚 | 最小充分契约与明确排除项 |
+| **Trace Failure** | 已有症状，但根因未知 | 可复现步骤与因果证据 |
+| **Probe Choice** | 一个明确的设计决策需要一次性实验 | 观察结果及其决策后果 |
+| **Deliver Change** | 目标和编辑边界已经确定 | 聚焦检查、实现结果和最终状态证据 |
+| **Inspect Structure** | 问题是归属、重复或边界，而非单点修复 | owner/caller 追踪与边界建议 |
+| **Manage Work Items** | 需要本地 PRD、任务拆分或验收清单 | 本地工件、依赖和验收条件 |
+
+普通解释、翻译、简单读码和明确的机械文件操作会绕过路由，不增加流程负担。
+
 > **示例：**“结账服务在高负载下偶尔生成重复订单。”技能会先进入 **Trace Failure**，要求
 > 获得稳定复现和因果证据，然后才允许转入实现与最终验证。
 
-两个运行时共享同一份运行时无关的 canonical 技能源、references 和路由用例。
-
 ## 30 秒理解
+
+![Engineer Software 双运行时工作流封面，Codex 与 DeepSeek Harness 共享一份规范技能并进入证据验证](plugins/engineer-software/assets/engineer-software-cover.png)
 
 Engineer Software 是一个精简路由器：它先判断请求是否存在实质性的工程不确定性，再选择一个最小而聚焦的模块，并要求用新证据证明何时可以离开该模块。
 
@@ -161,19 +179,6 @@ Remove-Item -LiteralPath .dsh/skills/engineer-software -Recurse
 | Harness loader smoke | 官方 `0.1.0-rc.6` 已在项目 workspace 中发现并加载技能 |
 
 完整矩阵、官方来源、升级故障处理和用户级目录说明见 [docs/compatibility.md](docs/compatibility.md)。静态检查不需要 API key；真实模型会话仍由用户自己的 Harness 配置和权限决定。
-
-## 六个路由模块
-
-模块是可选的起点，不是必须走完的流水线：
-
-| 模块 | 何时使用 | 离开时应有的证据 |
-| --- | --- | --- |
-| **Shape Work** | 行为、范围、兼容性或验收条件仍不清楚 | 最小充分契约与明确排除项 |
-| **Trace Failure** | 已有症状，但根因未知 | 可复现步骤与因果证据 |
-| **Probe Choice** | 一个明确的设计决策需要一次性实验 | 观察结果及其决策后果 |
-| **Deliver Change** | 目标和编辑边界已关闭 | 聚焦检查、实现结果和最终状态证据 |
-| **Inspect Structure** | 问题是归属、重复或边界，而非单点修复 | owner/caller 追踪与边界建议 |
-| **Manage Work Items** | 需要本地 PRD、任务拆分或验收清单 | 本地工件、依赖和验收条件 |
 
 ## 验证
 

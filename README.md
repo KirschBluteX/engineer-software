@@ -4,35 +4,35 @@
 
 **Make AI coding agents choose the right engineering move before they edit code.**
 
-[简体中文](README.zh-CN.md) · [Quick start](#quick-start) · [Six workflows](#what-it-routes)
+[Six workflows](#six-workflows) · [Quick start](#quick-start) · [How it works](#how-it-works) · [简体中文](README.zh-CN.md)
 
 Engineer Software is an installable skill for Codex and DeepSeek Harness. Instead of letting an
 agent jump from a vague request or unexplained failure straight to a patch, it selects exactly one
 bounded workflow and defines the evidence required before the agent can change course or claim
 completion.
 
+**At a glance:** 6 bounded workflows · 25 deterministic routing cases · 2 runtime paths · 1
+canonical source
+
+## Six workflows
+
+The modules are alternative starting points, not a pipeline that every task must complete:
+
+| Workflow | Start here when | Evidence required to leave |
+| --- | --- | --- |
+| **Shape Work** | behavior, compatibility, scope, or acceptance is unclear | smallest sufficient contract and explicit exclusions |
+| **Trace Failure** | a symptom exists but its cause is unknown | reproduction plus causal evidence |
+| **Probe Choice** | one named design decision needs a disposable experiment | observed result and decision consequence |
+| **Deliver Change** | the outcome and edit boundary are closed | focused check, implementation result, and final-state evidence |
+| **Inspect Structure** | ownership, duplication, or boundaries are the question | traced owners and callers plus a boundary recommendation |
+| **Manage Work Items** | the requested output is a local PRD, task set, or acceptance list | local artifact with dependencies and acceptance criteria |
+
+Ordinary explanations, translations, format-only work, and specified reversible file operations
+bypass the workflow instead of adding ceremony.
+
 > **Example:** “Checkout sometimes creates a duplicate order under load.” The skill starts with
 > **Trace Failure**, requires a reproduction and causal evidence, and only then allows a transition
 > to implementation and final verification.
-
-Both runtimes load the same runtime-neutral canonical skill source, references, and routing cases.
-
-![Engineer Software runtime-neutral workflow cover showing Codex and DeepSeek Harness feeding one canonical skill into evidence verification](plugins/engineer-software/assets/engineer-software-cover.png)
-
-## 30-second overview
-
-1. The thin router checks whether the request is ordinary work or has material engineering
-   uncertainty.
-2. It starts exactly one primary module and records the evidence needed to leave that module.
-3. A later module is entered only when fresh evidence closes the current module and identifies a
-   different need.
-4. The same `SKILL.md`, references, and routing cases are available to both runtimes.
-
-![Dual-runtime shared-core flow](docs/assets/runtime-neutral-flow.svg)
-
-The projection is generated and checked; it is not a second hand-maintained workflow. See
-[runtime compatibility](docs/compatibility.md) for the official Harness sources and the preview
-status.
 
 ## Quick start
 
@@ -85,19 +85,23 @@ the documented filesystem root. A keyless live-loader smoke check for the offici
 package is recorded in [runtime compatibility](docs/compatibility.md), covering filesystem discovery
 and relative resource loading.
 
-## What it routes
+## How it works
 
-| Primary module | Start when | Evidence to leave it |
-| --- | --- | --- |
-| Shape Work | behavior, compatibility, scope, or acceptance is open | smallest sufficient contract and exclusions |
-| Trace Failure | a symptom exists but its cause is unknown | reproduction plus causal evidence |
-| Probe Choice | one named decision needs a disposable experiment | observed result and decision consequence |
-| Deliver Change | outcome and edit boundary are closed | focused check, implementation, final-state evidence |
-| Inspect Structure | ownership or duplication is the question | traced owners, callers, and boundary recommendation |
-| Manage Work Items | the requested output is a local PRD/task set | local artifact with acceptance and dependencies |
+![Engineer Software runtime-neutral workflow cover showing Codex and DeepSeek Harness feeding one canonical skill into evidence verification](plugins/engineer-software/assets/engineer-software-cover.png)
 
-The six modules are alternatives, not a mandatory ceremony. Ordinary explanations, translations,
-format-only work, and specified reversible file operations bypass the workflow.
+1. The thin router checks whether the request is ordinary work or has material engineering
+   uncertainty.
+2. It starts exactly one primary module and records the evidence needed to leave that module.
+3. A later module is entered only when fresh evidence closes the current module and identifies a
+   different need.
+4. Codex and DeepSeek Harness load the same runtime-neutral canonical `SKILL.md`, references, and
+   routing cases.
+
+![Dual-runtime shared-core flow](docs/assets/runtime-neutral-flow.svg)
+
+The Harness projection is generated and checked; it is not a second hand-maintained workflow. See
+[runtime compatibility](docs/compatibility.md) for the official Harness sources and developer
+preview status.
 
 ## Real examples
 
@@ -175,16 +179,6 @@ Start with [CONTRIBUTING.md](CONTRIBUTING.md). Keep `plugins/engineer-software/s
 as the only editable workflow source, run the projection check after changes, and add routing
 fixtures for new transitions. [ROADMAP.md](ROADMAP.md) records the deliberately small next steps;
 it does not promise a long-lived adapter framework.
-
-## Copy-ready launch text
-
-> Engineer Software is a runtime-neutral, evidence-driven workflow for AI coding agents. It routes
-> substantive software work through one bounded module at a time, keeps Codex and DeepSeek Harness
-> on one canonical source, and makes every transition carry fresh verification evidence.
-
-Suggested GitHub description, topics, and homepage are recorded in
-[`docs/public-submission.md`](docs/public-submission.md). They are recommendations only; this
-repository does not call GitHub APIs or claim users, stars, adoption, or official sponsorship.
 
 ## License
 
