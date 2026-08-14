@@ -10,7 +10,7 @@ structural redundancy, or draft local work items. Codex and DeepSeek Harness are
 loading paths over one canonical skill source; the workflow semantics and evidence fixtures stay
 shared.
 
-![Abstract engineering cover](plugins/engineer-software/assets/engineer-software-cover.png)
+![Engineer Software runtime-neutral workflow cover showing Codex and DeepSeek Harness feeding one canonical skill into evidence verification](plugins/engineer-software/assets/engineer-software-cover.png)
 
 ![Dual-runtime shared-core flow](docs/assets/runtime-neutral-flow.svg)
 
