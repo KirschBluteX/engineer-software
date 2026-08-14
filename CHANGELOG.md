@@ -12,6 +12,8 @@ All notable changes to Engineer Software are documented here.
   identity now provide separate, non-tautological evidence.
 - Hardened behavior runs with headless-safe prompts, one-hour timeout guards, reproducible experiment
   metadata, semantic pairing checks, and explicit separation of provider failures from workflow scores.
+- Added evidence-sufficient fast paths for shaping, failure tracing, and decision probes, plus an
+  optional same-environment median-latency regression gate for behavior summaries.
 
 ## [0.1.1] - 2026-08-14
 

@@ -305,6 +305,67 @@ class BehaviorEvaluationContractTests(unittest.TestCase):
         self.assertIn("Unscored raw rows: baseline=1, treatment=0", completed.stdout)
         self.assertIn("mean_delta=+1.00", completed.stdout)
 
+    def test_latency_summary_and_optional_gate(self) -> None:
+        scores = {metric: 2 for metric in METRICS}
+        rows = [
+            {
+                "id": "timed",
+                "condition": "baseline",
+                "completion_state": "completed",
+                "exit_code": 0,
+                "experiment_fingerprint": self.FINGERPRINT,
+                "started_at": "2026-01-01T00:00:00+00:00",
+                "finished_at": "2026-01-01T00:00:10+00:00",
+                "scores": scores,
+            },
+            {
+                "id": "timed",
+                "condition": "treatment",
+                "completion_state": "completed",
+                "exit_code": 0,
+                "experiment_fingerprint": self.FINGERPRINT,
+                "started_at": "2026-01-01T00:00:00+00:00",
+                "finished_at": "2026-01-01T00:00:12+00:00",
+                "scores": scores,
+            },
+        ]
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "timed.json"
+            path.write_text(json.dumps({"results": rows}), encoding="utf-8")
+            failed = subprocess.run(
+                [
+                    sys.executable,
+                    "scripts/summarize_behavior_eval.py",
+                    str(path),
+                    "--max-median-slowdown-percent",
+                    "10",
+                ],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                check=False,
+            )
+            passed = subprocess.run(
+                [
+                    sys.executable,
+                    "scripts/summarize_behavior_eval.py",
+                    str(path),
+                    "--max-median-slowdown-percent",
+                    "25",
+                ],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                check=False,
+            )
+        self.assertEqual(1, failed.returncode)
+        self.assertIn("Latency gate failed", failed.stderr)
+        self.assertEqual(0, passed.returncode, passed.stderr)
+        self.assertIn("Median wall time", passed.stdout)
+        self.assertIn("Latency gate passed", passed.stdout)
+
     def test_score_collector_rejects_duplicate_unscored_rows(self) -> None:
         paired, errors, unscored = collect_scores(
             [

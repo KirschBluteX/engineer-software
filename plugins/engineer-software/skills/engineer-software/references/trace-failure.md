@@ -14,6 +14,8 @@ known, use `deliver-change` instead.
    request replay, browser scenario, trace replay, benchmark, or bounded harness.
 2. Reproduce the user's exact symptom. Distinguish a failing assertion from broken setup and record
    pre-existing unrelated failures separately.
+   If a deterministic reproduction directly exposes one cause and a focused regression fails for
+   it, skip minimization, hypothesis lists, and alternative checks unless real ambiguity remains.
 3. Minimize the reproduction while preserving the failure. Raise the reproduction rate before
    debugging a flaky case; control time, randomness, concurrency, or inputs when possible.
 4. Form only the competing hypotheses the evidence justifies. Rank them by observed facts and give
@@ -22,7 +24,7 @@ known, use `deliver-change` instead.
    tag temporary instrumentation so it can be found and removed.
 6. For performance, establish a repeatable metric and baseline before changing code. Use profiling,
    query plans, or bisection rather than general logging.
-7. Confirm the cause by showing that it predicts the symptom and that a controlled change or probe
+7. When ambiguity remains, confirm the cause by showing that it predicts the symptom and a probe
    removes or alters the symptom as expected. Check a plausible alternative when confusion remains.
 8. Remove temporary instrumentation and retain the minimized reproduction as regression evidence
    when it exercises the real failure path.

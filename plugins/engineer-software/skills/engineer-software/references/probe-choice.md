@@ -14,12 +14,12 @@ not a draft production implementation.
    possible result would support.
 2. Place the probe where its context is clear but mark it unmistakably disposable. Avoid changing
    production paths unless the experiment specifically requires a controlled integration seam.
-3. Build the minimum runnable slice. Reuse the repository's runner and dependencies; avoid new
-   persistence, abstractions, error frameworks, generalized options, or polish.
+3. Build the minimum runnable slice. Prefer one inline or in-memory command when it can preserve the
+   observation; otherwise mark a temporary file clearly. Avoid abstractions, options, or polish.
 4. Make relevant state and results visible. Keep inputs fixed when comparing alternatives and use
    one command or scenario to repeat the observation.
-5. Run the probe and record the result, uncertainty, and decision consequence. A runnable artifact
-   without an observed result is not evidence.
+5. Run the probe and record the result, uncertainty, and decision consequence. Stop when the named
+   choice is answered; do not test adjacent dimensions unless they can reverse the decision.
 6. Delete the probe after it answers the question, or retain it only with explicit user agreement
    and a clear expiry. Capture the decision in the requested durable artifact when one exists.
 

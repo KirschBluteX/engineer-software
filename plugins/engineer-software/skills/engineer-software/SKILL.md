@@ -29,6 +29,8 @@ alternative starting modes, not phases that every task must traverse.
 6. Treat invented numeric policies, service levels, or compatibility promises as hypotheses, not
    recommendations. Tie a proposed default to repository or user evidence, or leave it explicitly
    unresolved for the user.
+7. Reuse fresh evidence. Repeat a read, probe, or check only after relevant state changed or the
+   earlier result was inconclusive.
 
 ## Bypass
 

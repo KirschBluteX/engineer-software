@@ -91,7 +91,24 @@ python scripts/summarize_behavior_eval.py evals/runs/behavior-scored.json
 ```
 
 The summary rejects malformed or partial score objects instead of silently treating missing values
-as zeros. It reports paired deltas, wins/ties/losses, and an exact two-sided sign-test p-value. Treat
-these as descriptive evidence for this model, fixture set, and prompt sample; they do not establish a
-general causal effect. A missing credential, timeout, or setup failure is environment evidence and
-must remain separate from a workflow failure.
+as zeros. It reports paired deltas, wins/ties/losses, an exact two-sided sign-test p-value, and (when
+both completed rows carry timestamps) per-case and aggregate wall-clock durations. Timing is an
+auditing signal for the fast-path changes; it is not a quality score.
+
+For a repeat experiment in the same environment and with the same model/provider configuration, an
+optional regression gate can bound the treatment median slowdown:
+
+```powershell
+python scripts/summarize_behavior_eval.py evals/runs/behavior-scored.json `
+  --max-median-slowdown-percent 25
+```
+
+The gate requires at least one complete, timed baseline/treatment pair and exits non-zero when the
+treatment median exceeds the baseline median by more than the selected percentage. Use it only for
+like-for-like reruns; machine load, provider queueing, timeout settings, and a small case sample can
+move wall time substantially. A pass does not establish that the workflow is faster in general, and
+a failure does not by itself show a semantic regression.
+
+Treat all score and timing results as descriptive evidence for this model, fixture set, and prompt
+sample; they do not establish a general causal effect. A missing credential, timeout, or setup
+failure is environment evidence and must remain separate from a workflow failure.

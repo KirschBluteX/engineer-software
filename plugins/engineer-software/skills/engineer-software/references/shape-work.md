@@ -11,13 +11,13 @@ or decision path is materially unresolved. Do not enter merely because a task is
 
 1. Inspect the current repository behavior, instructions, domain vocabulary, decision records,
    public contracts, and nearby conventions that can answer the open questions.
-2. Frame the work in observable terms: user or system outcome, affected surface, constraints,
-   non-goals, acceptance evidence, and irreversible or externally visible choices.
+2. Limit shaping to decisions the user named or evidence proves can block the next action. Frame
+   those in observable terms: outcome, affected surface, constraints, non-goals, and acceptance.
 3. Separate confirmed facts, evidence-backed inferences, safe reversible defaults, and decisions
    that genuinely require the user. Do not invent a numeric policy, service level, or compatibility
    promise from thin context; label it as a hypothesis or leave it unresolved.
-4. Stress-test uncertain behavior with concrete examples, boundary cases, failure cases, and
-   compatibility scenarios. Prefer a small example over abstract debate.
+4. Stress-test only uncertainty that can change the decision, using a small concrete boundary or
+   failure example. Do not expand into adjacent policy axes without blocking evidence.
 5. Ask at most one to three independent blocking questions together. Ask dependent questions
    only after their prerequisite is resolved. Include a recommendation when evidence supports one.
 6. Record a durable architecture decision only when the choice is hard to reverse, surprising

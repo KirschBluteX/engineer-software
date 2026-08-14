@@ -16,6 +16,22 @@ from validate_harness import OFFICIAL_SOURCES, static_errors  # noqa: E402
 
 
 class HarnessContractTests(unittest.TestCase):
+    def test_fast_paths_are_present_in_canonical_and_generated_skill(self) -> None:
+        markers = {
+            "SKILL.md": "Reuse fresh evidence.",
+            "references/shape-work.md": "Limit shaping to decisions the user named",
+            "references/trace-failure.md": "skip minimization, hypothesis lists, and alternative checks",
+            "references/probe-choice.md": "choice is answered; do not test adjacent dimensions",
+        }
+        for relative, marker in markers.items():
+            with self.subTest(relative=relative):
+                canonical = (ROOT / "plugins" / "engineer-software" / "skills" / "engineer-software" / relative).read_text(
+                    encoding="utf-8"
+                )
+                projected = (PROJECTION / relative).read_text(encoding="utf-8")
+                self.assertIn(marker, canonical)
+                self.assertIn(marker, projected)
+
     def test_projection_checker_rejects_drift(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory) / "engineer-software"
