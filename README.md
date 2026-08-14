@@ -2,15 +2,20 @@
 
 [![CI](https://github.com/KirschBluteX/engineer-software/actions/workflows/ci.yml/badge.svg)](https://github.com/KirschBluteX/engineer-software/actions/workflows/ci.yml)
 
-**A runtime-neutral, evidence-driven software engineering workflow for AI coding agents.**
+**Make AI coding agents choose the right engineering move before they edit code.**
 
-[简体中文](README.zh-CN.md)
+[简体中文](README.zh-CN.md) · [Quick start](#quick-start) · [Six workflows](#what-it-routes)
 
-Engineer Software helps an agent choose the smallest trustworthy next move: close an unclear
-contract, trace an unexplained failure, run one disposable probe, deliver a defined change, inspect
-structural redundancy, or draft local work items. Codex and DeepSeek Harness are two first-class
-loading paths over one canonical skill source; the workflow semantics and evidence fixtures stay
-shared.
+Engineer Software is an installable skill for Codex and DeepSeek Harness. Instead of letting an
+agent jump from a vague request or unexplained failure straight to a patch, it selects exactly one
+bounded workflow and defines the evidence required before the agent can change course or claim
+completion.
+
+> **Example:** “Checkout sometimes creates a duplicate order under load.” The skill starts with
+> **Trace Failure**, requires a reproduction and causal evidence, and only then allows a transition
+> to implementation and final verification.
+
+Both runtimes load the same runtime-neutral canonical skill source, references, and routing cases.
 
 ![Engineer Software runtime-neutral workflow cover showing Codex and DeepSeek Harness feeding one canonical skill into evidence verification](plugins/engineer-software/assets/engineer-software-cover.png)
 
