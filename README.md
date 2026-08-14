@@ -1,18 +1,26 @@
 # Engineer Software
 
+**A runtime-neutral, evidence-driven software engineering workflow for AI coding agents.**
+
 [![CI](https://github.com/KirschBluteX/engineer-software/actions/workflows/ci.yml/badge.svg)](https://github.com/KirschBluteX/engineer-software/actions/workflows/ci.yml)
 
-**Make AI coding agents choose the right engineering move before they edit code.**
+Choose the smallest trustworthy engineering move before changing code.
 
-[Six workflows](#six-workflows) · [Quick start](#quick-start) · [How it works](#how-it-works) · [简体中文](README.zh-CN.md)
+[Six workflows](#six-workflows) · [Quick start](#quick-start) · [How it works](#how-it-works) · [Validation](#validation) · [简体中文](README.zh-CN.md)
 
-Engineer Software is an installable skill for Codex and DeepSeek Harness. Instead of letting an
-agent jump from a vague request or unexplained failure straight to a patch, it selects exactly one
-bounded workflow and defines the evidence required before the agent can change course or claim
-completion.
+Engineer Software gives Codex and DeepSeek Harness two runtime entries into one canonical workflow.
+For substantive software work, it selects exactly one bounded engineering mode and defines the
+evidence required before an agent can change direction or claim completion.
 
 **At a glance:** 6 bounded workflows · 25 deterministic routing cases · 2 runtime paths · 1
 canonical source
+
+![Engineer Software runtime-neutral workflow cover showing Codex and DeepSeek Harness feeding one canonical skill into evidence verification](plugins/engineer-software/assets/engineer-software-cover.png)
+
+**Use it when** requirements, failure mechanisms, design choices, implementation scope, structural
+ownership, or acceptance evidence materially affect the result. **Bypass it when** the request is an
+ordinary explanation, translation, simple code reading, formatting change, or already-specified
+mechanical operation.
 
 ## Six workflows
 
@@ -26,9 +34,6 @@ The modules are alternative starting points, not a pipeline that every task must
 | **Deliver Change** | the outcome and edit boundary are closed | focused check, implementation result, and final-state evidence |
 | **Inspect Structure** | ownership, duplication, or boundaries are the question | traced owners and callers plus a boundary recommendation |
 | **Manage Work Items** | the requested output is a local PRD, task set, or acceptance list | local artifact with dependencies and acceptance criteria |
-
-Ordinary explanations, translations, format-only work, and specified reversible file operations
-bypass the workflow instead of adding ceremony.
 
 > **Example:** “Checkout sometimes creates a duplicate order under load.” The skill starts with
 > **Trace Failure**, requires a reproduction and causal evidence, and only then allows a transition
@@ -65,7 +70,8 @@ The existing Codex marketplace manifest and plugin path remain unchanged.
 
 DeepSeek Harness is an official open-source project, currently marked **developer preview**. Its
 official local skill provider scans project `.dsh/skills` roots. This checkout includes a generated
-projection of the canonical skill:
+projection of the canonical skill. Check it, start Harness, then choose this repository as the
+workspace:
 
 ```powershell
 python scripts/sync_harness_skill.py --check
@@ -73,21 +79,27 @@ python scripts/validate_harness.py --check
 npx @deepseek-ai/dsh web
 ```
 
-Choose this repository as the Harness workspace and send a software-engineering request. To update
-the projection after a canonical edit, run `python scripts/sync_harness_skill.py --write`; to remove
-the project-local entry, remove the generated `.dsh/skills/engineer-software/` directory. A user-global
-copy can target `$DSH_HOME/skills/engineer-software`; exact install and troubleshooting details are
-in [runtime compatibility](docs/compatibility.md).
+After updating a reviewed checkout or editing the canonical skill, regenerate and verify the same
+project entry:
 
-There is deliberately no guessed Harness manifest or claim of DeepSeek endorsement. The official
-bundle format is for executable Cordis composition layers; a Markdown skill is correctly loaded from
-the documented filesystem root. A keyless live-loader smoke check for the official `0.1.0-rc.6`
-package is recorded in [runtime compatibility](docs/compatibility.md), covering filesystem discovery
-and relative resource loading.
+```powershell
+git pull --ff-only
+python scripts/sync_harness_skill.py --write
+python scripts/validate_harness.py --check
+```
+
+Remove only this generated project entry after confirming the target:
+
+```powershell
+Get-Item .dsh/skills/engineer-software
+Remove-Item -LiteralPath .dsh/skills/engineer-software -Recurse
+```
+
+A user-global copy can target `$DSH_HOME/skills/engineer-software`. Exact target commands,
+troubleshooting, official contract sources, and the recorded loader smoke are in
+[runtime compatibility](docs/compatibility.md).
 
 ## How it works
-
-![Engineer Software runtime-neutral workflow cover showing Codex and DeepSeek Harness feeding one canonical skill into evidence verification](plugins/engineer-software/assets/engineer-software-cover.png)
 
 1. The thin router checks whether the request is ordinary work or has material engineering
    uncertainty.
@@ -137,6 +149,14 @@ does not introduce a second hand-maintained routing implementation.
 For matched task-level baseline/treatment runs against source-attributed local fixtures, see the
 [behavior A/B guide](evals/README.md#task-level-behavior-ab).
 
+### Evaluation boundary
+
+The repository checks activation, route selection, projection identity, and evidence contracts.
+Task-level A/B runs are sampled behavioral evidence, not a general benchmark claim. This README does
+not publish a single speedup percentage; use the paired evaluator and its optional latency gate only
+for like-for-like reruns. The raw result format, scoring rubric, and interpretation limits remain in
+the [behavior A/B guide](evals/README.md#task-level-behavior-ab).
+
 ## Validation
 
 Use Python 3.9 or newer. The repository is standard-library-first; the development-only
@@ -166,6 +186,8 @@ The short version:
   possible.
 - The `.dsh/skills` tree is a generated projection. Edit the Codex canonical source and regenerate;
   drift fails validation.
+- Engineer Software is not an official DeepSeek plugin, partnership, or endorsement, and it does not
+  invent a Harness manifest outside the documented filesystem skill contract.
 - This project does not ship an MCP server, hook, telemetry, credential store, or background
   service. Tool permissions, API keys, and model configuration remain the user's runtime policy.
 - Never commit API keys, `.env` files, session logs, profile state, generated temporary assets, or

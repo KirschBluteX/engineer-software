@@ -2,7 +2,9 @@
 
 [六个路由模块](#六个路由模块) · [Codex 安装](#codex安装升级卸载与调用) · [DeepSeek Harness](#deepseek-harness安装升级卸载与项目级技能) · [English README](README.md)
 
-**让 AI 编程代理在动手改代码前，先选择正确的工程动作。**
+**一个面向 AI 编程代理、运行时中立、证据驱动的软件工程工作流。**
+
+让代理在动手改代码前，先选择最小且可信的工程动作。
 
 Engineer Software 是一个可安装到 Codex 和 DeepSeek Harness 的技能。面对模糊需求或原因
 未知的故障时，它不会让代理直接跳到修改代码，而是只选择一个边界明确的工作流，并规定
@@ -200,6 +202,10 @@ scripts/validate_evals.py` 或 `python scripts/validate_harness.py --check`。
 ```powershell
 python scripts/run_routing_eval.py --limit 5
 ```
+
+本 README 不发布单一速度提升百分比。任务级 A/B 结果用于观察路由、证据、范围和验证行为；
+只有在相同条件下重复运行时，才使用配对汇总器及其可选时延门禁。原始格式、评分标准和解释
+边界见 [行为 A/B 指南](evals/README.md#task-level-behavior-ab)。
 
 上面的门禁聚焦 projection、路由夹具和 loader contract。另有一次官方 loader smoke：真实
 `0.1.0-rc.6` 进程在本仓库 workspace 中发现并加载了 `engineer-software`，并解析其相对

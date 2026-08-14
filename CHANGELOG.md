@@ -14,6 +14,8 @@ All notable changes to Engineer Software are documented here.
   metadata, semantic pairing checks, and explicit separation of provider failures from workflow scores.
 - Added evidence-sufficient fast paths for shaping, failure tracing, and decision probes, plus an
   optional same-environment median-latency regression gate for behavior summaries.
+- Reworked the English README around runtime-neutral positioning, explicit use/bypass boundaries,
+  complete runtime lifecycle commands, and reproducible evidence instead of a fixed speed claim.
 
 ## [0.1.1] - 2026-08-14
 
