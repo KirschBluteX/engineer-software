@@ -6,7 +6,7 @@
 
 Choose the smallest trustworthy engineering move before changing code.
 
-[Six workflows](#six-workflows) · [Quick start](#quick-start) · [How it works](#how-it-works) · [Validation](#validation) · [简体中文](README.zh-CN.md)
+[Six workflows](#six-workflows) · [How it works](#how-it-works) · [Real examples](#real-examples) · [Quick start](#quick-start) · [Validation](#validation) · [简体中文](README.zh-CN.md)
 
 Engineer Software gives Codex and DeepSeek Harness two runtime entries into one canonical workflow.
 For substantive software work, it selects exactly one bounded engineering mode and defines the
@@ -38,6 +38,57 @@ The modules are alternative starting points, not a pipeline that every task must
 > **Example:** “Checkout sometimes creates a duplicate order under load.” The skill starts with
 > **Trace Failure**, requires a reproduction and causal evidence, and only then allows a transition
 > to implementation and final verification.
+
+## How it works
+
+The workflow is a small decision loop, not a ceremony-heavy pipeline:
+
+1. The router checks whether the request is ordinary work or has material engineering uncertainty.
+2. It starts one primary module and makes that module's exit evidence explicit.
+3. A later module is entered only when fresh evidence closes the current module and identifies a
+   different need.
+4. Codex and DeepSeek Harness load the same canonical `SKILL.md`, references, and routing cases.
+
+![Dual-runtime shared-core flow](docs/assets/runtime-neutral-flow.svg)
+
+The Harness tree is generated and checked from the Codex source; it is not a second hand-maintained
+workflow. See [runtime compatibility](docs/compatibility.md) for the official Harness sources,
+loader contract, and compatibility limits.
+
+## Real examples
+
+Each example follows the same shape: prompt → route → evidence required to proceed.
+
+- “Checkout sometimes creates a duplicate order under load. Find the cause and fix it.” →
+  **Trace Failure** → reproduce the symptom, establish the cause, then add a focused regression.
+- “Build a disposable experiment to compare two state-transition models before we choose one.” →
+  **Probe Choice** → observe the named trade-off and record the decision consequence.
+- “Add the documented `--json` flag to the existing status command and verify the specified output
+  contract.” → **Deliver Change** → implement the closed contract and verify the final state.
+- “Explain what this function does and why it returns null here.” → **Bypass** → answer directly
+  without adding workflow overhead.
+
+These examples are represented in [`evals/routing-cases.json`](evals/routing-cases.json).
+Run the deterministic routing checks without model access:
+
+```powershell
+python scripts/validate_evals.py
+python scripts/validate_harness.py --check
+python scripts/run_routing_eval.py --limit 5
+```
+
+Optional live Codex evidence is read-only and environment-dependent:
+
+```powershell
+python scripts/run_routing_eval.py --live --public-submission `
+  --output evals/runs/local-routing-results.json
+```
+
+The repository checks routing, projection identity, and evidence contracts. Task-level A/B runs are
+sampled behavioral evidence, not a general benchmark claim. This README does not publish a single
+speedup percentage; use the paired evaluator and optional latency gate only for like-for-like reruns.
+See the [behavior A/B guide](evals/README.md#task-level-behavior-ab) for the raw format and scoring
+limits.
 
 ## Quick start
 
@@ -98,64 +149,6 @@ Remove-Item -LiteralPath .dsh/skills/engineer-software -Recurse
 A user-global copy can target `$DSH_HOME/skills/engineer-software`. Exact target commands,
 troubleshooting, official contract sources, and the recorded loader smoke are in
 [runtime compatibility](docs/compatibility.md).
-
-## How it works
-
-1. The thin router checks whether the request is ordinary work or has material engineering
-   uncertainty.
-2. It starts exactly one primary module and records the evidence needed to leave that module.
-3. A later module is entered only when fresh evidence closes the current module and identifies a
-   different need.
-4. Codex and DeepSeek Harness load the same runtime-neutral canonical `SKILL.md`, references, and
-   routing cases.
-
-![Dual-runtime shared-core flow](docs/assets/runtime-neutral-flow.svg)
-
-The Harness projection is generated and checked; it is not a second hand-maintained workflow. See
-[runtime compatibility](docs/compatibility.md) for the official Harness sources and developer
-preview status.
-
-## Real examples
-
-These prompts are included in [`evals/routing-cases.json`](evals/routing-cases.json) and can be run
-through the static fixture validator or the optional Codex runner:
-
-- “Checkout sometimes creates a duplicate order under load. Find the cause and fix it.” →
-  **Trace Failure** (the mechanism is unknown).
-- “Build a disposable experiment to compare two state-transition models before we choose one.” →
-  **Probe Choice** (one named decision, throwaway scope).
-- “Add the documented `--json` flag to the existing status command and verify the specified output
-  contract.” → **Deliver Change** (the contract is closed).
-- “Explain what this function does and why it returns null here.” → **Bypass** (ordinary code
-  reading).
-
-Run deterministic routing checks without model access:
-
-```powershell
-python scripts/validate_evals.py
-python scripts/validate_harness.py --check
-python scripts/run_routing_eval.py --limit 5
-```
-
-Optional live Codex evidence is read-only and environment-dependent:
-
-```powershell
-python scripts/run_routing_eval.py --live --public-submission `
-  --output evals/runs/local-routing-results.json
-```
-
-The Harness projection and the Codex runner use the same case definitions; the generated projection
-does not introduce a second hand-maintained routing implementation.
-For matched task-level baseline/treatment runs against source-attributed local fixtures, see the
-[behavior A/B guide](evals/README.md#task-level-behavior-ab).
-
-### Evaluation boundary
-
-The repository checks activation, route selection, projection identity, and evidence contracts.
-Task-level A/B runs are sampled behavioral evidence, not a general benchmark claim. This README does
-not publish a single speedup percentage; use the paired evaluator and its optional latency gate only
-for like-for-like reruns. The raw result format, scoring rubric, and interpretation limits remain in
-the [behavior A/B guide](evals/README.md#task-level-behavior-ab).
 
 ## Validation
 

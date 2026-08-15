@@ -16,6 +16,8 @@ All notable changes to Engineer Software are documented here.
   optional same-environment median-latency regression gate for behavior summaries.
 - Reworked the English README around runtime-neutral positioning, explicit use/bypass boundaries,
   complete runtime lifecycle commands, and reproducible evidence instead of a fixed speed claim.
+- Reordered both README entries so users see the workflow model and concrete routing examples before
+  choosing a Codex or Harness installation path.
 
 ## [0.1.1] - 2026-08-14
 

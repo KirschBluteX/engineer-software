@@ -1,6 +1,6 @@
 # Engineer Software 中文入口
 
-[六个路由模块](#六个路由模块) · [Codex 安装](#codex安装升级卸载与调用) · [DeepSeek Harness](#deepseek-harness安装升级卸载与项目级技能) · [English README](README.md)
+[六个路由模块](#六个路由模块) · [工作原理](#工作原理) · [真实示例](#真实示例) · [Codex 安装](#codex安装升级卸载与调用) · [DeepSeek Harness](#deepseek-harness安装升级卸载与项目级技能) · [English README](README.md)
 
 **一个面向 AI 编程代理、运行时中立、证据驱动的软件工程工作流。**
 
@@ -43,6 +43,36 @@ Engineer Software 是一个精简路由器：它先判断请求是否存在实�
 - 普通解释、翻译、简单读码和明确的机械文件操作会绕过路由，不增加流程负担。
 
 技术细节仍以英文 [README](README.md) 和 canonical [SKILL.md](plugins/engineer-software/skills/engineer-software/SKILL.md) 为准；本文件是中文用户入口，不复制维护完整技能正文。
+
+## 工作原理
+
+这套工作流是一个小型决策循环，不是每项任务都必须走完的仪式化流水线：
+
+1. 先判断请求是普通工作，还是存在会影响结果的工程不确定性。
+2. 只启动一个主要模块，并明确它需要什么证据才能离开。
+3. 只有新证据关闭当前问题、并证明另一个问题确实出现时，才切换模块。
+4. Codex 与 DeepSeek Harness 加载同一份 canonical `SKILL.md`、references 和路由用例。
+
+![双运行时共享核心流程](docs/assets/runtime-neutral-flow.svg)
+
+`.dsh/skills/` 是从 Codex canonical source 生成并检查的投影，不是第二套手工维护的工作流。
+官方 Harness 来源、loader 契约和兼容边界见 [docs/compatibility.md](docs/compatibility.md)。
+
+## 真实示例
+
+每个示例都遵循同一条路径：用户请求 → 路由模块 → 继续推进前必须拿到的证据。
+
+- “结账服务在高负载下偶尔生成重复订单。请找出原因并修复。” → **Trace Failure** →
+  先稳定复现、证明根因，再加入聚焦回归测试。
+- “在选择方案前，用一次性实验比较两个状态转换模型。” → **Probe Choice** →
+  观察明确的取舍，并记录它对决策的影响。
+- “为已有 status 命令增加已经定义的 `--json` 输出，并验证输出契约。” → **Deliver Change** →
+  直接实现已关闭的契约，并验证最终状态。
+- “解释这个函数做什么，以及为什么这里返回 null。” → **Bypass** →
+  直接回答，不增加工程工作流负担。
+
+这些示例对应 [`evals/routing-cases.json`](evals/routing-cases.json)，可以通过下方“验证”中的确定性命令运行；
+它们帮助判断路由是否合适，不是速度排名。
 
 ## Codex：安装、升级、卸载与调用
 
